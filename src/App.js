@@ -3,7 +3,6 @@ import { Sun, Heart, Users, Calendar, CheckCircle, ArrowRight, Mail, Phone, Cloc
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Main App Component
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
   const [assessmentStep, setAssessmentStep] = useState(0);
@@ -46,11 +45,9 @@ export default function App() {
   );
 }
 
-// Landing Page Component
 function LandingPage({ setCurrentView }) {
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <header className="relative bg-gradient-to-br from-orange-600 via-amber-500 to-orange-400 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%]"
@@ -93,7 +90,6 @@ function LandingPage({ setCurrentView }) {
         </div>
       </header>
 
-      {/* Services Section */}
       <section className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-4 text-orange-900">
           Divine Healing Services 🙏
@@ -144,7 +140,6 @@ function LandingPage({ setCurrentView }) {
         </div>
       </section>
 
-      {/* Pricing Section */}
       <section className="bg-gradient-to-r from-orange-100 to-amber-50 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-4 text-orange-900">
@@ -222,7 +217,6 @@ function LandingPage({ setCurrentView }) {
         </div>
       </section>
 
-      {/* Journey Timeline */}
       <section className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-12 text-orange-900">
           Nagesh's Divine Journey 🦁
@@ -273,7 +267,6 @@ function LandingPage({ setCurrentView }) {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="bg-gradient-to-r from-orange-50 to-amber-50 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-orange-900">
@@ -312,7 +305,6 @@ function LandingPage({ setCurrentView }) {
         </div>
       </section>
 
-      {/* Final CTA */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-4xl font-bold mb-6 text-orange-900">
           Ready to Awaken Your Divine Shakti? 🦁
@@ -336,7 +328,6 @@ function LandingPage({ setCurrentView }) {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gradient-to-r from-orange-600 to-amber-600 text-white py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -357,7 +348,6 @@ function LandingPage({ setCurrentView }) {
   );
 }
 
-// Assessment Flow Component
 function AssessmentFlow({ step, setStep, answers, setAnswers, setCurrentView, resetToHome }) {
   const [contactInfo, setContactInfo] = useState({});
   const [results, setResults] = useState(null);
@@ -720,10 +710,10 @@ function AssessmentFlow({ step, setStep, answers, setAnswers, setCurrentView, re
   );
 }
 
-// Booking Flow Component
 function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome }) {
   const [processing, setProcessing] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [error, setError] = useState(null);
 
   const services = [
     { name: "Single Session", price: 2999, duration: "60 min" },
@@ -732,12 +722,137 @@ function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome
     { name: "Energy Healing Session", price: 3999, duration: "90 min" }
   ];
 
-  const handlePayment = () => {
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayNow = async () => {
     setProcessing(true);
-    setTimeout(() => {
+    setError(null);
+
+    const res = await loadRazorpay();
+
+    if (!res) {
+      setError('Failed to load Razorpay. Please check your connection.');
+      setProcessing(false);
+      return;
+    }
+
+    try {
+      const orderResponse = await fetch(`${API_URL}/payment/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: data.price,
+          currency: 'INR',
+          bookingData: data
+        }),
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create payment order');
+      }
+
+      const orderData = await orderResponse.json();
+
+      const options = {
+        key: orderData.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Soul Shakti Wellness',
+        description: data.service,
+        order_id: orderData.orderId,
+        handler: async function (response) {
+          try {
+            const verifyResponse = await fetch(`${API_URL}/payment/verify`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingData: data
+              }),
+            });
+
+            if (!verifyResponse.ok) {
+              throw new Error('Payment verification failed');
+            }
+
+            setConfirmed(true);
+            setProcessing(false);
+          } catch (verifyError) {
+            console.error('Verification error:', verifyError);
+            setError('Payment verification failed. Please contact support.');
+            setProcessing(false);
+          }
+        },
+        prefill: {
+          name: data.name,
+          email: data.email,
+          contact: data.phone
+        },
+        notes: {
+          service: data.service,
+          date: data.date,
+          time: data.time
+        },
+        theme: {
+          color: '#ea580c'
+        },
+        modal: {
+          ondismiss: function() {
+            setProcessing(false);
+            setError('Payment cancelled');
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError('Failed to process payment. Please try again.');
+      setProcessing(false);
+    }
+  };
+
+  const handlePayAfter = async () => {
+    setProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/booking/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingData: data
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create booking');
+      }
+
       setConfirmed(true);
       setProcessing(false);
-    }, 2000);
+    } catch (error) {
+      console.error('Booking error:', error);
+      setError('Failed to create booking. Please try again.');
+      setProcessing(false);
+    }
   };
 
   if (confirmed) {
@@ -818,6 +933,12 @@ function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
+          {error && (
+            <div className="mb-6 bg-red-50 border-2 border-red-200 rounded-lg p-4">
+              <p className="text-red-800">⚠️ {error}</p>
+            </div>
+          )}
+
           {step === 0 && (
             <div>
               <h2 className="text-2xl font-bold text-orange-900 mb-6">Select Your Service</h2>
@@ -982,15 +1103,17 @@ function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome
 
               <div className="space-y-3">
                 <button
-                  onClick={handlePayment}
-                  className="w-full bg-orange-600 text-white py-4 rounded-full font-bold hover:bg-orange-700 transition-all"
+                  onClick={handlePayNow}
+                  disabled={processing}
+                  className="w-full bg-orange-600 text-white py-4 rounded-full font-bold hover:bg-orange-700 transition-all disabled:bg-gray-400"
                 >
                   Pay Now with Razorpay - ₹{data.price?.toLocaleString()}
                 </button>
                 
                 <button
-                  onClick={handlePayment}
-                  className="w-full bg-orange-100 text-orange-600 border-2 border-orange-600 py-4 rounded-full font-bold hover:bg-orange-200 transition-all"
+                  onClick={handlePayAfter}
+                  disabled={processing}
+                  className="w-full bg-orange-100 text-orange-600 border-2 border-orange-600 py-4 rounded-full font-bold hover:bg-orange-200 transition-all disabled:bg-gray-200"
                 >
                   Book Now, Pay After Session
                 </button>
