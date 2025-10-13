@@ -1,621 +1,1024 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Star, Heart, Sparkles, Brain, Moon, CheckCircle, ArrowRight, Menu, X, Mail, Phone, MapPin, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sun, Heart, Users, Calendar, CheckCircle, ArrowRight, Mail, Phone, Clock, Star } from 'lucide-react';
 
-export default function SoulShaktiApp() {
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+// Main App Component
+export default function App() {
   const [currentView, setCurrentView] = useState('landing');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [assessmentData, setAssessmentData] = useState(null);
-  const [bookingData, setBookingData] = useState(null);
+  const [assessmentStep, setAssessmentStep] = useState(0);
+  const [assessmentAnswers, setAssessmentAnswers] = useState({});
+  const [bookingStep, setBookingStep] = useState(0);
+  const [bookingData, setBookingData] = useState({});
 
-  useEffect(() => {
-    const savedAssessments = localStorage.getItem('soulshakti_assessments');
-    const savedBookings = localStorage.getItem('soulshakti_bookings');
-    if (savedAssessments) console.log('Loaded assessments:', JSON.parse(savedAssessments));
-    if (savedBookings) console.log('Loaded bookings:', JSON.parse(savedBookings));
-  }, []);
-
-  const scrollToAssessment = () => {
-    setCurrentView('assessment');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const scrollToBooking = (recommendedService = null) => {
-    setBookingData({ recommendedService });
-    setCurrentView('booking');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const resetToHome = () => {
+    setCurrentView('landing');
+    setAssessmentStep(0);
+    setBookingStep(0);
+    setAssessmentAnswers({});
+    setBookingData({});
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm shadow-md z-50 border-b-2 border-orange-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <button 
-              onClick={() => setCurrentView('landing')}
-              className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 bg-clip-text text-transparent flex items-center gap-2"
-            >
-              <Zap className="text-orange-600" size={28} />
-              Soul Shakti Wellness
-            </button>
-            
-            <div className="hidden md:flex space-x-8">
-              <button onClick={() => setCurrentView('landing')} className="text-gray-700 hover:text-orange-600 transition font-medium">Home</button>
-              <button onClick={scrollToAssessment} className="text-gray-700 hover:text-orange-600 transition font-medium">Assessment</button>
-              <button onClick={() => scrollToBooking()} className="text-gray-700 hover:text-orange-600 transition font-medium">Book Session</button>
-            </div>
-
-            <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={24} className="text-orange-600" /> : <Menu size={24} className="text-orange-600" />}
-            </button>
-          </div>
-        </div>
-
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t-2 border-orange-100">
-            <div className="px-4 py-2 space-y-2">
-              <button onClick={() => { setCurrentView('landing'); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-gray-700 hover:text-orange-600 font-medium">Home</button>
-              <button onClick={() => { scrollToAssessment(); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-gray-700 hover:text-orange-600 font-medium">Assessment</button>
-              <button onClick={() => { scrollToBooking(); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-gray-700 hover:text-orange-600 font-medium">Book Session</button>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      <div className="pt-16">
-        {currentView === 'landing' && <LandingPage onStartAssessment={scrollToAssessment} onBooking={scrollToBooking} />}
-        {currentView === 'assessment' && <AssessmentFlow onComplete={(data) => { setAssessmentData(data); scrollToBooking(data.recommendedService); }} onBack={() => setCurrentView('landing')} />}
-        {currentView === 'booking' && <BookingFlow initialService={bookingData?.recommendedService} onBack={() => setCurrentView('landing')} />}
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
+      {currentView === 'landing' && <LandingPage setCurrentView={setCurrentView} />}
+      {currentView === 'assessment' && (
+        <AssessmentFlow
+          step={assessmentStep}
+          setStep={setAssessmentStep}
+          answers={assessmentAnswers}
+          setAnswers={setAssessmentAnswers}
+          setCurrentView={setCurrentView}
+          resetToHome={resetToHome}
+        />
+      )}
+      {currentView === 'booking' && (
+        <BookingFlow
+          step={bookingStep}
+          setStep={setBookingStep}
+          data={bookingData}
+          setData={setBookingData}
+          setCurrentView={setCurrentView}
+          resetToHome={resetToHome}
+        />
+      )}
     </div>
   );
 }
 
-function LandingPage({ onStartAssessment, onBooking }) {
+// Landing Page Component
+function LandingPage({ setCurrentView }) {
   return (
-    <div className="w-full">
-      <section className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 py-20"
-        style={{
-          background: 'linear-gradient(135deg, #fff5e6 0%, #ffe4cc 25%, #ffd4a3 50%, #ffb366 75%, #ff9933 100%)',
-        }}>
-        <div className="absolute inset-0 opacity-30"
-          style={{
-            background: 'radial-gradient(circle at 50% 120%, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%), conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255,153,51,0.3) 30deg, transparent 60deg, rgba(255,153,51,0.3) 90deg, transparent 120deg, rgba(255,153,51,0.3) 150deg, transparent 180deg, rgba(255,153,51,0.3) 210deg, transparent 240deg, rgba(255,153,51,0.3) 270deg, transparent 300deg, rgba(255,153,51,0.3) 330deg, transparent 360deg)',
-          }}></div>
-        
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="mb-8 flex justify-center">
-            <div className="relative">
-              <Zap size={64} className="text-orange-600 animate-pulse" />
-              <div className="absolute inset-0 blur-xl bg-orange-400 opacity-50"></div>
-            </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <header className="relative bg-gradient-to-br from-orange-600 via-amber-500 to-orange-400 text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%]"
+               style={{
+                 background: 'repeating-conic-gradient(from 0deg, transparent 0deg 2deg, rgba(255,255,255,0.3) 2deg 4deg)',
+               }}>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-orange-700 via-orange-600 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">
-            Awaken Your Inner Shakti
-          </h1>
-          <h2 className="text-2xl md:text-4xl mb-6 text-orange-900 font-semibold">
-            Transform Through Divine Healing Energy
-          </h2>
-          <p className="text-lg md:text-xl mb-8 text-orange-800 max-w-2xl mx-auto font-medium leading-relaxed">
-            Channel the power of Maa Durga through Gratitude Healing, Theta Healing, and Deep Subconscious Work. 
-            Experience divine transformation since 2015.
-          </p>
-          <button 
-            onClick={onStartAssessment}
-            className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-10 py-5 rounded-full text-xl font-bold hover:from-orange-700 hover:to-amber-700 transition transform hover:scale-105 shadow-2xl border-2 border-orange-400"
+        </div>
+
+        <nav className="relative z-10 container mx-auto px-4 py-6 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Sun className="w-8 h-8 text-white" />
+            <span className="text-2xl font-bold">Soul Shakti</span>
+          </div>
+          <button
+            onClick={() => setCurrentView('booking')}
+            className="bg-white text-orange-600 px-6 py-2 rounded-full font-semibold hover:bg-orange-50 transition-all"
           >
-            🦁 Begin Your Divine Journey
+            Book Session
           </button>
-          <div className="mt-12 flex flex-wrap justify-center gap-8 text-base">
-            <div className="flex items-center gap-2 bg-white/90 px-6 py-3 rounded-full shadow-lg">
-              <Star className="text-amber-500" size={24} />
-              <span className="font-bold text-orange-900">1000+ Souls Transformed</span>
+        </nav>
+
+        <div className="relative z-10 container mx-auto px-4 py-20 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            Awaken Your Divine Shakti 🦁
+          </h1>
+          <p className="text-xl md:text-2xl mb-4 text-orange-50">
+            Transform Your Life with Maa Durga's Blessings
+          </p>
+          <p className="text-lg mb-8 text-orange-100 max-w-2xl mx-auto">
+            Founded by Nagesh - Certified Life Coach specializing in Gratitude Healing, 
+            Subconscious Reprogramming, and Integrated Divine Practices
+          </p>
+          <button
+            onClick={() => setCurrentView('assessment')}
+            className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-50 transition-all transform hover:scale-105 shadow-2xl"
+          >
+            Begin Your Divine Journey →
+          </button>
+        </div>
+      </header>
+
+      {/* Services Section */}
+      <section className="container mx-auto px-4 py-20">
+        <h2 className="text-4xl font-bold text-center mb-4 text-orange-900">
+          Divine Healing Services 🙏
+        </h2>
+        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+          Blessed practices to awaken your inner strength and divine energy
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            {
+              icon: <Heart className="w-12 h-12 text-orange-600" />,
+              title: "Gratitude Healing",
+              description: "Transform your life through the divine power of gratitude and appreciation"
+            },
+            {
+              icon: <Users className="w-12 h-12 text-orange-600" />,
+              title: "Subconscious Reprogramming",
+              description: "Release limiting beliefs with Maa Durga's empowering energy"
+            },
+            {
+              icon: <Sun className="w-12 h-12 text-orange-600" />,
+              title: "Energy Healing",
+              description: "Align your chakras and awaken your divine Shakti power"
+            },
+            {
+              icon: <Calendar className="w-12 h-12 text-orange-600" />,
+              title: "Life Purpose Coaching",
+              description: "Discover your dharma and live with divine purpose"
+            },
+            {
+              icon: <CheckCircle className="w-12 h-12 text-orange-600" />,
+              title: "Stress & Anxiety Relief",
+              description: "Find inner peace through sacred healing practices"
+            },
+            {
+              icon: <Star className="w-12 h-12 text-orange-600" />,
+              title: "Relationship Healing",
+              description: "Transform relationships with compassion and divine love"
+            }
+          ].map((service, index) => (
+            <div key={index} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all border-2 border-orange-100 hover:border-orange-300">
+              <div className="mb-4">{service.icon}</div>
+              <h3 className="text-xl font-bold mb-3 text-orange-900">{service.title}</h3>
+              <p className="text-gray-600">{service.description}</p>
             </div>
-            <div className="flex items-center gap-2 bg-white/90 px-6 py-3 rounded-full shadow-lg">
-              <CheckCircle className="text-green-600" size={24} />
-              <span className="font-bold text-orange-900">9+ Years Divine Practice</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/90 px-6 py-3 rounded-full shadow-lg">
-              <Heart className="text-red-500" size={24} />
-              <span className="font-bold text-orange-900">100% Sacred Commitment</span>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      <section className="py-20 px-4 bg-gradient-to-b from-white to-orange-50">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-orange-700 to-amber-600 bg-clip-text text-transparent">
-            Divine Services for Your Transformation
+      {/* Pricing Section */}
+      <section className="bg-gradient-to-r from-orange-100 to-amber-50 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-4 text-orange-900">
+            Divine Healing Packages ✨
           </h2>
-          <p className="text-center text-orange-800 mb-12 text-lg font-medium">Guided by Nagesh with the blessings of Maa Durga</p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-            <ServiceCard 
-              icon="✨" title="Gratitude Healing" price="₹1,111"
-              description="Experience the life-changing power of gratitude blessed by divine energy. Through structured healing sessions, unlock abundance, joy, and transformation in every area of your life using proven gratitude techniques."
-            />
-            <ServiceCard 
-              icon="🔍" title="Subconscious Digging Sessions" price="₹1,111"
-              description="Dive deep into your subconscious mind with divine guidance to uncover hidden beliefs and patterns. Through gentle digging techniques, identify and transform these programs at their source."
-            />
-            <ServiceCard 
-              icon="⚡" title="Advanced Healing Techniques"
-              description="Utilizing theta-inspired methods and deep subconscious work channeling divine shakti energy. Access altered states of consciousness to facilitate rapid transformation and release emotional blockages."
-            />
-            <ServiceCard 
-              icon="🧭" title="Life Coaching & Counseling" price="₹1,111"
-              description="Receive certified life coaching support infused with spiritual wisdom. Navigate life's challenges with divine guidance, set empowering goals, and create sustainable positive change."
-            />
-            <ServiceCard 
-              icon="💭" title="Dream Interpretation" price="₹1,111"
-              description="Every dream carries divine messages. Discover the hidden wisdom in your dreams blessed by higher consciousness. Understand what your subconscious is revealing for your path forward."
-            />
-            <ServiceCard 
-              icon="🦁" title="Integrated Shakti Healing Sessions" badge="Most Powerful" featured={true}
-              description="Experience Nagesh's signature healing method channeling Maa Durga's divine energy. Combines Gratitude Healing, Theta brainwave techniques, and deep subconscious digging. Access multiple levels of consciousness, release blockages, and reprogram limiting beliefs with divine blessings for lasting transformation."
-            />
-          </div>
-        </div>
-      </section>
+          <p className="text-center text-gray-600 mb-12">
+            Choose your path to transformation
+          </p>
 
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-orange-700 to-amber-600 bg-clip-text text-transparent">
-            Choose Your Divine Healing Journey
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <PricingCard 
-              icon="💭" title="Dream Interpretation" price="₹1,111" duration="30-45 minutes"
-              features={["Divine dream analysis", "Subconscious insights", "Spiritual guidance", "Written summary"]}
-              onBook={onBooking}
-            />
-            <PricingCard 
-              icon="✨" title="Single Healing Session" price="₹1,111" duration="60-90 minutes"
-              features={["Gratitude Healing techniques", "Subconscious Digging", "Theta brainwave activation", "Personalized healing plan"]}
-              onBook={onBooking}
-            />
-            <PricingCard 
-              icon="🦁" title="3-Session Transformation Package" price="₹3,333" duration="Three 60-90 minute sessions"
-              badge="Divine Transformation" highlighted={true}
-              features={["Complete subconscious reprogramming", "Sustained transformation with blessings", "Weekly divine guidance", "Progress tracking", "Sacred support between sessions"]}
-              note="Divine commitment creates lasting miracles"
-              onBook={onBooking}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-4 bg-gradient-to-br from-orange-100 via-amber-50 to-orange-100 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,153,51,0.1) 35px, rgba(255,153,51,0.1) 70px)',
-          }}></div>
-        <div className="max-w-4xl mx-auto relative z-10">
-          <h2 className="text-5xl font-bold text-center mb-4 text-orange-900">Nagesh's Divine Journey</h2>
-          <p className="text-center text-orange-800 mb-12 text-lg font-medium">From personal awakening to empowering thousands through Soul Shakti Wellness</p>
-          <div className="space-y-8">
-            <TimelineItem 
-              year="2015 - The Sacred Beginning"
-              description="Nagesh planted the seed of Soul Shakti Wellness through divine inspiration. Discovered the power of Law of Attraction, gratitude healing, and spiritual growth blessed by Maa Durga's energy."
-            />
-            <TimelineItem 
-              year="Spiritual Growth & Learning"
-              description="Deepened practice through various healing modalities including gratitude healing by Rhonda Byrne, Theta healing techniques, and sacred subconscious work. What healed through divine grace became the foundation to help others."
-            />
-            <TimelineItem 
-              year="During COVID-19 - Divine Service"
-              description="Guided over 100 souls through gratitude healing during the pandemic with divine blessings. Helped them find peace, purpose, and stability during uncertain times through Soul Shakti's sacred programs."
-            />
-            <TimelineItem 
-              year="Professional Certification"
-              description="Nagesh became a certified Life Coach and deepened practice in Theta Healing, blessed by higher consciousness to enhance the ability to facilitate profound divine transformation."
-            />
-            <TimelineItem 
-              year="Today - Spreading Divine Light" isLast={true}
-              description="Thousands of empowered souls have transformed their lives through Soul Shakti's divine approach blessed by Maa Durga. Now expanding to reach even more seekers ready for sacred transformation."
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-4 bg-gradient-to-b from-white to-orange-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-orange-700 to-amber-600 bg-clip-text text-transparent">
-            Divine Transformations, Sacred Testimonials
-          </h2>
-          <div className="flex flex-wrap justify-center gap-8 mb-12 mt-8">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-orange-100 to-amber-100 px-6 py-3 rounded-full shadow-lg">
-              <CheckCircle className="text-orange-600" size={28} />
-              <span className="font-bold text-lg text-orange-900">1000+ Divine Healings</span>
-            </div>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-orange-100 to-amber-100 px-6 py-3 rounded-full shadow-lg">
-              <Star className="text-amber-500" size={28} />
-              <span className="font-bold text-lg text-orange-900">9+ Years Sacred Service</span>
-            </div>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-orange-100 to-amber-100 px-6 py-3 rounded-full shadow-lg">
-              <Heart className="text-red-500" size={28} />
-              <span className="font-bold text-lg text-orange-900">Certified with Divine Blessings</span>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <TestimonialCard 
-              text="The gratitude healing sessions with Nagesh at Soul Shakti completely shifted my perspective with divine grace. I went from feeling stuck to grateful and abundant. Within weeks, opportunities started flowing into my life. His approach carries sacred energy."
-              author="Anjali K., Bangalore" issue="Financial Struggles"
-            />
-            <TestimonialCard 
-              text="I had recurring nightmares for years. Nagesh's dream interpretation session revealed divine patterns. The healing work that followed released trauma with sacred blessings. I sleep peacefully now thanks to Soul Shakti's divine guidance."
-              author="Vikram P., Delhi" issue="Recurring Nightmares"
-            />
-            <TestimonialCard 
-              text="As someone who tried therapy for years, I was amazed at how quickly Nagesh's subconscious digging reached the root with divine intervention. The combination of gratitude and theta techniques at Soul Shakti created miracles I'd been seeking for a decade."
-              author="Meera J., Pune" issue="Anxiety & Past Trauma"
-            />
-            <TestimonialCard 
-              text="Nagesh doesn't just heal you with techniques - he channels divine shakti energy. The gratitude practices blessed by Maa Durga's grace have become my daily spiritual ritual that keeps me grounded and divinely protected."
-              author="Arjun M., Hyderabad" issue="Lack of Direction"
-            />
-            <TestimonialCard 
-              text="I was skeptical about 'energy healing' but Nagesh's approach carries genuine divine power. The results speak for themselves—my relationship with my family has completely transformed through Soul Shakti's sacred blessings."
-              author="Divya R., Chennai" issue="Relationship Issues"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-4 bg-gradient-to-br from-orange-100 to-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-br from-orange-600 via-orange-500 to-amber-600 rounded-3xl p-8 md:p-12 text-white text-center shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 opacity-20"
-              style={{
-                background: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)',
-              }}></div>
-            <div className="relative z-10">
-              <Zap size={56} className="mx-auto mb-4 animate-pulse" />
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Ready for Divine Transformation?</h2>
-              <p className="text-xl mb-8 text-orange-50">Join thousands blessed by Soul Shakti's divine healing energy and Maa Durga's grace</p>
-              <button 
-                onClick={onStartAssessment}
-                className="bg-white text-orange-700 px-10 py-5 rounded-full text-xl font-bold hover:bg-orange-50 transition transform hover:scale-105 shadow-2xl border-2 border-orange-200"
-              >
-                🦁 Begin Your Divine Journey
-              </button>
-              <div className="border-t-2 border-orange-400 pt-8 mt-8">
-                <p className="italic text-orange-50 text-lg font-medium">
-                  "Working with Nagesh at Soul Shakti awakened my divine shakti energy. The combination of gratitude healing and sacred subconscious work helped me break free from patterns blessed by Maa Durga's grace. I'm finally living my divinely guided life."
-                </p>
-                <p className="mt-4 text-orange-100 font-semibold">— Soul Shakti Divine Journey Participant</p>
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                name: "Single Session",
+                price: "₹2,999",
+                features: [
+                  "60-minute one-on-one session",
+                  "Personalized healing plan",
+                  "Follow-up support (7 days)",
+                  "Guided meditation recording"
+                ]
+              },
+              {
+                name: "Transformation Package",
+                price: "₹14,999",
+                popular: true,
+                features: [
+                  "6 sessions (twice weekly)",
+                  "Comprehensive assessment",
+                  "Daily check-ins via WhatsApp",
+                  "Lifetime community access",
+                  "Bonus: Energy healing session"
+                ]
+              },
+              {
+                name: "Divine Journey",
+                price: "₹28,999",
+                features: [
+                  "12 sessions (3 months)",
+                  "Complete life transformation",
+                  "24/7 priority support",
+                  "Monthly energy healing",
+                  "Personalized rituals & practices"
+                ]
+              }
+            ].map((pkg, index) => (
+              <div key={index} className={`bg-white p-8 rounded-2xl shadow-xl ${pkg.popular ? 'ring-4 ring-orange-500 transform scale-105' : ''}`}>
+                {pkg.popular && (
+                  <div className="bg-orange-500 text-white text-sm font-bold py-1 px-4 rounded-full inline-block mb-4">
+                    MOST POPULAR
+                  </div>
+                )}
+                <h3 className="text-2xl font-bold mb-2 text-orange-900">{pkg.name}</h3>
+                <div className="text-4xl font-bold mb-6 text-orange-600">{pkg.price}</div>
+                <ul className="space-y-3 mb-8">
+                  {pkg.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <CheckCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-1" />
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => setCurrentView('booking')}
+                  className={`w-full py-3 rounded-full font-bold transition-all ${
+                    pkg.popular
+                      ? 'bg-orange-600 text-white hover:bg-orange-700'
+                      : 'bg-orange-100 text-orange-600 hover:bg-orange-200'
+                  }`}
+                >
+                  Choose Package
+                </button>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <footer className="bg-gradient-to-b from-orange-900 to-orange-950 text-white py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-orange-300 to-amber-300 bg-clip-text text-transparent">
-                Soul Shakti Wellness
-              </h3>
-              <p className="text-orange-200 font-medium">Founded by Nagesh - Channeling divine transformation through Maa Durga's blessings since 2015</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-xl text-orange-300">Divine Contact</h4>
-              <div className="space-y-3">
-                <a href="mailto:soulshaktie@gmail.com" className="flex items-center gap-2 text-orange-200 hover:text-orange-100 transition font-medium">
-                  <Mail size={20} />
-                  <span>soulshaktie@gmail.com</span>
-                </a>
-                <div className="flex items-center gap-2 text-orange-200 font-medium">
-                  <MapPin size={20} />
-                  <span>Bengaluru, Karnataka, India</span>
+      {/* Journey Timeline */}
+      <section className="container mx-auto px-4 py-20">
+        <h2 className="text-4xl font-bold text-center mb-12 text-orange-900">
+          Nagesh's Divine Journey 🦁
+        </h2>
+
+        <div className="max-w-3xl mx-auto space-y-8">
+          {[
+            {
+              year: "2015",
+              title: "The Awakening",
+              description: "Discovered the transformative power of gratitude healing after personal life challenges"
+            },
+            {
+              year: "2017",
+              title: "Certification & Training",
+              description: "Completed advanced certifications in life coaching and energy healing practices"
+            },
+            {
+              year: "2019",
+              title: "Divine Connection",
+              description: "Deepened spiritual practice through Maa Durga's blessings and sacred rituals"
+            },
+            {
+              year: "2021",
+              title: "Soul Shakti Founded",
+              description: "Established Soul Shakti Wellness to share divine healing with the world"
+            },
+            {
+              year: "2025",
+              title: "1000+ Lives Transformed",
+              description: "Blessed to guide thousands on their journey to inner peace and divine purpose"
+            }
+          ].map((milestone, index) => (
+            <div key={index} className="flex gap-4">
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold">
+                  {index + 1}
                 </div>
+                {index < 4 && <div className="w-1 h-full bg-orange-300"></div>}
+              </div>
+              <div className="pb-8">
+                <div className="text-orange-600 font-bold">{milestone.year}</div>
+                <h3 className="text-xl font-bold mb-2 text-orange-900">{milestone.title}</h3>
+                <p className="text-gray-600">{milestone.description}</p>
               </div>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-xl text-orange-300">Sacred Links</h4>
-              <div className="space-y-2">
-                <button className="block text-orange-200 hover:text-orange-100 transition font-medium">Privacy Policy</button>
-                <button className="block text-orange-200 hover:text-orange-100 transition font-medium">Terms & Conditions</button>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-gradient-to-r from-orange-50 to-amber-50 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12 text-orange-900">
+            Divine Transformations 🌟
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Priya S.",
+                text: "Nagesh's gratitude healing sessions transformed my life completely. The divine energy I felt was incredible!",
+                rating: 5
+              },
+              {
+                name: "Rahul M.",
+                text: "After 6 sessions, I found my true purpose. The Maa Durga blessings are real and powerful!",
+                rating: 5
+              },
+              {
+                name: "Anjali K.",
+                text: "Soul Shakti helped me heal from years of anxiety. I feel blessed and empowered now!",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <div key={index} className="bg-white p-6 rounded-xl shadow-lg">
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-orange-500 text-orange-500" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4 italic">"{testimonial.text}"</p>
+                <div className="font-bold text-orange-900">{testimonial.name}</div>
               </div>
-            </div>
+            ))}
           </div>
-          <div className="border-t-2 border-orange-800 pt-8 text-center text-orange-300">
-            <p className="font-medium">© 2025 Soul Shakti Wellness. All rights reserved. 🦁 Blessed by Divine Grace</p>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="container mx-auto px-4 py-20 text-center">
+        <h2 className="text-4xl font-bold mb-6 text-orange-900">
+          Ready to Awaken Your Divine Shakti? 🦁
+        </h2>
+        <p className="text-xl mb-8 text-gray-600">
+          Begin your transformation journey with Maa Durga's blessings
+        </p>
+        <div className="flex gap-4 justify-center flex-wrap">
+          <button
+            onClick={() => setCurrentView('assessment')}
+            className="bg-orange-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-700 transition-all transform hover:scale-105 shadow-xl"
+          >
+            Take Free Assessment
+          </button>
+          <button
+            onClick={() => setCurrentView('booking')}
+            className="bg-white text-orange-600 border-2 border-orange-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-50 transition-all"
+          >
+            Book Your Session
+          </button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gradient-to-r from-orange-600 to-amber-600 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sun className="w-8 h-8" />
+            <span className="text-2xl font-bold">Soul Shakti Wellness</span>
           </div>
+          <p className="mb-4">Founded by Nagesh - Divine Healing & Life Transformation</p>
+          <div className="flex justify-center gap-6 mb-6">
+            <a href="mailto:soulshaktie@gmail.com" className="flex items-center gap-2 hover:text-orange-200">
+              <Mail className="w-5 h-5" />
+              soulshaktie@gmail.com
+            </a>
+          </div>
+          <p className="text-orange-200">© 2025 Soul Shakti Wellness. Blessed with Maa Durga's divine grace 🙏</p>
         </div>
       </footer>
     </div>
   );
 }
 
-function ServiceCard({ icon, title, price, description, badge, featured }) {
-  return (
-    <div className={`bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition border-2 ${featured ? 'border-orange-400 bg-gradient-to-br from-orange-50 to-white' : 'border-orange-200'}`}>
-      {badge && (
-        <div className="inline-block bg-gradient-to-r from-orange-600 to-amber-600 text-white text-xs px-4 py-1 rounded-full mb-3 font-bold shadow-md">
-          {badge}
-        </div>
-      )}
-      <div className="text-5xl mb-4">{icon}</div>
-      <h3 className="text-xl font-bold mb-2 text-orange-900">{title}</h3>
-      {price && <p className="text-2xl font-bold text-orange-600 mb-3">{price}</p>}
-      <p className="text-gray-700 leading-relaxed">{description}</p>
-    </div>
-  );
-}
-
-function PricingCard({ icon, title, price, duration, features, badge, highlighted, note, onBook }) {
-  return (
-    <div className={`bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition border-2 ${highlighted ? 'border-orange-500 transform scale-105 bg-gradient-to-br from-orange-50 to-white' : 'border-orange-200'}`}>
-      {badge && (
-        <div className="inline-block bg-gradient-to-r from-orange-600 to-amber-600 text-white text-xs px-4 py-1 rounded-full mb-3 font-bold shadow-md">
-          {badge}
-        </div>
-      )}
-      <div className="text-5xl mb-4">{icon}</div>
-      <h3 className="text-xl font-bold mb-2 text-orange-900">{title}</h3>
-      <p className="text-3xl font-bold text-orange-600 mb-2">{price}</p>
-      <p className="text-sm text-gray-600 mb-6 font-medium">{duration}</p>
-      <ul className="space-y-3 mb-6">
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-start gap-2">
-            <CheckCircle size={20} className="text-orange-500 flex-shrink-0 mt-0.5" />
-            <span className="text-gray-700">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      {note && <p className="text-sm text-orange-700 italic mb-4 font-medium">{note}</p>}
-      <button 
-        onClick={() => onBook(title)}
-        className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-full font-bold hover:from-orange-700 hover:to-amber-700 transition shadow-lg"
-      >
-        Book Divine Session
-      </button>
-    </div>
-  );
-}
-
-function TimelineItem({ year, description, isLast }) {
-  return (
-    <div className="flex gap-4">
-      <div className="flex flex-col items-center">
-        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex-shrink-0 shadow-lg"></div>
-        {!isLast && <div className="w-1 h-full bg-gradient-to-b from-orange-400 to-amber-400 mt-2"></div>}
-      </div>
-      <div className="pb-8">
-        <h3 className="text-xl font-bold mb-2 text-orange-900">{year}</h3>
-        <p className="text-orange-800 leading-relaxed font-medium">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-function TestimonialCard({ text, author, issue }) {
-  return (
-    <div className="bg-white rounded-2xl p-6 shadow-xl border-2 border-orange-200 hover:border-orange-400 transition">
-      <div className="flex gap-1 mb-4">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} size={22} className="fill-amber-400 text-amber-400" />
-        ))}
-      </div>
-      <p className="text-gray-700 mb-4 leading-relaxed font-medium">{text}</p>
-      <div className="border-t-2 border-orange-100 pt-4">
-        <p className="font-bold text-orange-900">{author}</p>
-        <p className="text-sm text-orange-600 font-semibold">{issue}</p>
-      </div>
-    </div>
-  );
-}
-
-function AssessmentFlow({ onComplete, onBack }) {
-  const [step, setStep] = useState(1);
-  const [answers, setAnswers] = useState({});
-  const [contactInfo, setContactInfo] = useState({ name: '', email: '', phone: '' });
-  const [aiResults, setAiResults] = useState(null);
+// Assessment Flow Component
+function AssessmentFlow({ step, setStep, answers, setAnswers, setCurrentView, resetToHome }) {
+  const [contactInfo, setContactInfo] = useState({});
+  const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const questions = [
-    { id: 'q1', question: "What's your primary challenge right now?", options: ["Anxiety, stress, or overwhelm", "Low self-worth or confidence", "Relationship difficulties", "Career blocks or lack of direction", "Past trauma that still affects me", "Feeling stuck in negative patterns", "Financial struggles or scarcity mindset", "Lack of purpose or meaning"] },
-    { id: 'q2', question: "How long have you been experiencing this?", options: ["Less than 6 months", "6 months to 2 years", "2-5 years", "More than 5 years", "Most of my life"] },
-    { id: 'q3', question: "What have you tried before?", options: ["Traditional therapy/counseling", "Self-help books or videos", "Meditation or mindfulness", "Other healing modalities", "Nothing yet, this is my first step"] },
-    { id: 'q4', question: "Rate your current life satisfaction", type: 'slider', min: 1, max: 10 },
-    { id: 'q5', question: "What does healing mean to you?", options: ["Freedom from anxiety and fear", "Understanding myself better", "Breaking free from old patterns", "Finding my life purpose", "Manifesting abundance", "Inner peace and happiness", "Healing relationships"] },
-    { id: 'q6', question: "Have you experienced recurring dreams?", options: ["Yes, frequently", "Yes, occasionally", "No, rarely remember dreams"] },
-    { id: 'q7', question: "How quickly are you looking to start?", options: ["Immediately - I'm ready now", "Within the next week", "Within the next month", "Just exploring options for now"] },
-    { id: 'q8', question: "What would your life look like if this challenge was completely resolved?", type: 'textarea' }
+    {
+      id: 1,
+      text: "How do you feel about your current life situation?",
+      type: "multiple",
+      options: [
+        "Very satisfied and fulfilled",
+        "Generally happy but seeking growth",
+        "Feeling stuck or unfulfilled",
+        "Struggling significantly"
+      ]
+    },
+    {
+      id: 2,
+      text: "Rate your current stress level (1-10)",
+      type: "slider",
+      min: 1,
+      max: 10
+    },
+    {
+      id: 3,
+      text: "What area of life needs the most attention?",
+      type: "multiple",
+      options: [
+        "Career & Purpose",
+        "Relationships & Love",
+        "Health & Wellbeing",
+        "Spiritual Growth",
+        "Financial Abundance"
+      ]
+    },
+    {
+      id: 4,
+      text: "How often do you practice gratitude?",
+      type: "multiple",
+      options: [
+        "Daily - it's part of my routine",
+        "Sometimes - when I remember",
+        "Rarely - I should do it more",
+        "Never - I don't know how"
+      ]
+    },
+    {
+      id: 5,
+      text: "Describe your biggest challenge in one sentence:",
+      type: "textarea"
+    },
+    {
+      id: 6,
+      text: "Rate your connection to your inner self (1-10)",
+      type: "slider",
+      min: 1,
+      max: 10
+    },
+    {
+      id: 7,
+      text: "What would transformation mean for you?",
+      type: "textarea"
+    },
+    {
+      id: 8,
+      text: "Are you ready to commit to your divine healing journey?",
+      type: "multiple",
+      options: [
+        "Yes, absolutely ready to transform!",
+        "Yes, but need guidance on next steps",
+        "Maybe, want to learn more first",
+        "Not sure yet, just exploring"
+      ]
+    }
   ];
 
-  const handleAnswer = (questionId, answer) => {
-    setAnswers({ ...answers, [questionId]: answer });
-    if (step < 8) setTimeout(() => setStep(step + 1), 300);
-  };
-
-  const handleContactSubmit = () => {
-    if (contactInfo.name && contactInfo.email && contactInfo.phone.match(/^\d{10}$/)) {
-      setLoading(true);
-      setTimeout(() => {
-        const results = generateAIAnalysis(answers, contactInfo);
-        setAiResults(results);
-        const assessments = JSON.parse(localStorage.getItem('soulshakti_assessments') || '[]');
-        assessments.push({ timestamp: new Date().toISOString(), answers, contactInfo, results });
-        localStorage.setItem('soulshakti_assessments', JSON.stringify(assessments));
-        setLoading(false);
-        setStep('results');
-      }, 2000);
+  const handleNext = () => {
+    if (step < questions.length) {
+      setStep(step + 1);
+    } else {
+      handleSubmit();
     }
   };
 
-  const generateAIAnalysis = (answers, contact) => {
-    let recommendedService = "Single Healing Session";
-    let servicePrice = "₹1,111";
+  const handleSubmit = async () => {
+    setLoading(true);
     
-    const duration = answers.q2;
-    const satisfaction = parseInt(answers.q4) || 5;
-    const dreams = answers.q6;
+    setTimeout(() => {
+      const analysis = generateAnalysis(answers);
+      setResults(analysis);
+      setLoading(false);
+    }, 2000);
+  };
+
+  const generateAnalysis = (answers) => {
+    const stressLevel = parseInt(answers[2]) || 5;
+    const selfConnection = parseInt(answers[6]) || 5;
     
-    if (dreams?.includes("frequently") || dreams?.includes("occasionally")) {
-      recommendedService = "Dream Interpretation";
-    } else if ((duration?.includes("2-5 years") || duration?.includes("More than 5") || duration?.includes("Most of my life")) && satisfaction <= 6) {
-      recommendedService = "3-Session Transformation Package";
-      servicePrice = "₹3,333";
-    } else if (satisfaction < 3) {
-      recommendedService = "3-Session Transformation Package";
-      servicePrice = "₹3,333";
-    }
+    const score = Math.max(50, Math.min(100, 100 - (stressLevel * 5) + (selfConnection * 5)));
 
     return {
-      patternAnalysis: `Based on your responses blessed by divine insight, you're experiencing ${answers.q1?.toLowerCase() || 'challenges'} that have been affecting your life for ${answers.q2?.toLowerCase() || 'some time'}. This pattern often stems from deeply rooted subconscious beliefs. Your satisfaction level of ${answers.q4 || 'moderate'} out of 10 indicates significant room for divine transformation through Soul Shakti's sacred healing approach blessed by Maa Durga's energy.`,
-      recommendedService,
-      servicePrice,
-      reasoning: `I recommend ${recommendedService} because ${recommendedService === "Dream Interpretation" ? "your recurring dreams carry divine messages from your subconscious. By interpreting these dreams with sacred guidance, we can unlock insights blessed by higher consciousness about the patterns holding you back." : recommendedService === "3-Session Transformation Package" ? "lasting transformation requires consistent divine work. With multiple sessions blessed by Maa Durga's energy, we can systematically uncover and reprogram the subconscious patterns through sacred healing." : "a focused single session channeling divine shakti energy can create powerful shifts. We'll combine gratitude healing, subconscious digging, and theta techniques blessed by sacred consciousness to address your specific challenge."}`,
-      actionSteps: [
-        { title: "Daily Gratitude Practice with Divine Blessings", description: "Begin each morning by writing down three specific things you're grateful for, offering them to Maa Durga. Be detailed and specific to channel divine abundance energy into your consciousness." },
-        { title: "Sacred Subconscious Journaling", description: "Before bed, ask yourself: 'What belief kept me small today?' Write whatever comes up, then offer it to divine consciousness for transformation. This brings subconscious patterns into sacred awareness." }
+      overallScore: score,
+      primaryFocus: answers[3] || "Spiritual Growth & Inner Peace",
+      recommendations: [
+        "Begin daily gratitude practice with Maa Durga's blessings",
+        "Schedule regular meditation and energy healing sessions",
+        "Work on subconscious reprogramming for limiting beliefs",
+        "Join our transformation package for comprehensive healing"
       ],
-      recommendedService
+      nextSteps: [
+        "Book a free 15-minute consultation call",
+        "Join our divine community WhatsApp group",
+        "Start the 7-day gratitude challenge",
+        "Schedule your first transformation session"
+      ]
     };
   };
 
-  const progressPercentage = step === 'contact' ? 90 : step === 'results' ? 100 : (step / 8) * 80;
+  if (results) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white py-12">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <div className="text-center mb-8">
+              <Sun className="w-16 h-16 text-orange-600 mx-auto mb-4" />
+              <h2 className="text-3xl font-bold text-orange-900 mb-2">
+                Your Divine Assessment Results 🙏
+              </h2>
+              <p className="text-gray-600">Blessed with Maa Durga's guidance</p>
+            </div>
+
+            <div className="mb-8">
+              <div className="bg-gradient-to-r from-orange-100 to-amber-100 rounded-xl p-6 mb-6">
+                <div className="text-center">
+                  <div className="text-5xl font-bold text-orange-600 mb-2">{results.overallScore}%</div>
+                  <div className="text-gray-700">Divine Readiness Score</div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-orange-900 mb-3">Primary Focus Area</h3>
+                <p className="text-gray-700 bg-orange-50 p-4 rounded-lg">{results.primaryFocus}</p>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-orange-900 mb-3">Personalized Recommendations</h3>
+                <ul className="space-y-2">
+                  {results.recommendations.map((rec, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-1" />
+                      <span className="text-gray-700">{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-bold text-orange-900 mb-3">Your Next Steps</h3>
+                <ul className="space-y-2">
+                  {results.nextSteps.map((step, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <ArrowRight className="w-5 h-5 text-orange-600 flex-shrink-0 mt-1" />
+                      <span className="text-gray-700">{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setCurrentView('booking')}
+                className="flex-1 bg-orange-600 text-white py-4 rounded-full font-bold hover:bg-orange-700 transition-all"
+              >
+                Book Your First Session
+              </button>
+              <button
+                onClick={resetToHome}
+                className="flex-1 bg-orange-100 text-orange-600 py-4 rounded-full font-bold hover:bg-orange-200 transition-all"
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Sun className="w-16 h-16 text-orange-600 animate-spin mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-orange-900 mb-2">
+            Analyzing Your Divine Path... 🙏
+          </h2>
+          <p className="text-gray-600">Connecting with Maa Durga's wisdom</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (step >= questions.length) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white py-12">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <h2 className="text-3xl font-bold text-orange-900 mb-6 text-center">
+              Contact Information 📧
+            </h2>
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
+                <input
+                  type="text"
+                  value={contactInfo.name || ''}
+                  onChange={(e) => setContactInfo({...contactInfo, name: e.target.value})}
+                  className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                  placeholder="Enter your name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Email</label>
+                <input
+                  type="email"
+                  value={contactInfo.email || ''}
+                  onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
+                  className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                  placeholder="your.email@example.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Phone Number</label>
+                <input
+                  type="tel"
+                  value={contactInfo.phone || ''}
+                  onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
+                  className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                  placeholder="+91 XXXXX XXXXX"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              disabled={!contactInfo.name || !contactInfo.email || !contactInfo.phone}
+              className="w-full bg-orange-600 text-white py-4 rounded-full font-bold hover:bg-orange-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Get My Divine Assessment Results 🙏
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentQuestion = questions[step];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <button onClick={onBack} className="mb-6 text-orange-600 hover:text-orange-700 flex items-center gap-2 font-bold">← Back to Home</button>
-
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white py-12">
+      <div className="container mx-auto px-4 max-w-2xl">
         <div className="mb-8">
-          <div className="h-3 bg-orange-100 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-orange-600 to-amber-600 transition-all duration-500 shadow-lg" style={{ width: `${progressPercentage}%` }}></div>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-semibold text-orange-900">Question {step + 1} of {questions.length}</span>
+            <span className="text-sm text-gray-600">{Math.round(((step + 1) / questions.length) * 100)}% Complete</span>
           </div>
-          <p className="text-sm text-orange-700 mt-2 text-center font-bold">{step === 'results' ? 'Divine Analysis Complete!' : step === 'contact' ? 'Almost there...' : `Question ${step} of 8`}</p>
+          <div className="w-full bg-orange-200 rounded-full h-3">
+            <div
+              className="bg-gradient-to-r from-orange-600 to-amber-500 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${((step + 1) / questions.length) * 100}%` }}
+            ></div>
+          </div>
         </div>
 
-        {step <= 8 && step !== 'contact' && step !== 'results' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-orange-200">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-orange-900">{questions[step - 1].question}</h2>
-            {questions[step - 1].type === 'slider' ? (
-              <div className="space-y-6">
-                <input type="range" min="1" max="10" value={answers[questions[step - 1].id] || 5}
-                  onChange={(e) => setAnswers({ ...answers, [questions[step - 1].id]: e.target.value })}
-                  className="w-full h-3 bg-orange-100 rounded-lg appearance-none cursor-pointer accent-orange-600"
-                />
-                <div className="flex justify-between text-sm text-orange-700 font-bold">
-                  <span>Very Dissatisfied (1)</span>
-                  <span className="text-3xl font-bold text-orange-600">{answers[questions[step - 1].id] || 5}</span>
-                  <span>Completely Satisfied (10)</span>
-                </div>
-                <button onClick={() => handleAnswer(questions[step - 1].id, answers[questions[step - 1].id] || 5)}
-                  className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-4 rounded-full font-bold hover:from-orange-700 hover:to-amber-700 transition shadow-lg">
-                  Continue Divine Journey
-                </button>
-              </div>
-            ) : questions[step - 1].type === 'textarea' ? (
-              <div className="space-y-6">
-                <textarea value={answers[questions[step - 1].id] || ''} onChange={(e) => setAnswers({ ...answers, [questions[step - 1].id]: e.target.value })}
-                  placeholder="Share your divine vision..." maxLength={500} rows={6}
-                  className="w-full border-2 border-orange-200 rounded-2xl p-4 focus:border-orange-500 focus:outline-none resize-none">
-                </textarea>
-                <p className="text-sm text-orange-600 font-bold">{(answers[questions[step - 1].id] || '').length}/500 characters</p>
-                <button onClick={() => answers[questions[step - 1].id]?.trim() && setStep('contact')}
-                  disabled={!answers[questions[step - 1].id]?.trim()}
-                  className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-4 rounded-full font-bold hover:from-orange-700 hover:to-amber-700 transition disabled:opacity-50 shadow-lg">
-                  Continue to Divine Contact
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {questions[step - 1].options.map((option, index) => (
-                  <button key={index} onClick={() => handleAnswer(questions[step - 1].id, option)}
-                    className="w-full text-left p-4 border-2 border-orange-200 rounded-2xl hover:border-orange-500 hover:bg-orange-50 transition font-medium">
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
+          <h2 className="text-2xl font-bold text-orange-900 mb-6">
+            {currentQuestion.text}
+          </h2>
 
-        {step === 'contact' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-orange-200">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-orange-900">Divine Connection</h2>
-            <p className="text-orange-700 mb-8 font-medium">Enter your details to receive your personalized divine healing roadmap</p>
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-bold mb-2 text-orange-900">Full Name *</label>
-                <input type="text" required value={contactInfo.name} onChange={(e) => setContactInfo({ ...contactInfo, name: e.target.value })}
-                  className="w-full border-2 border-orange-200 rounded-xl p-4 focus:border-orange-500 focus:outline-none" placeholder="Your full name" />
+          {currentQuestion.type === 'multiple' && (
+            <div className="space-y-3">
+              {currentQuestion.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setAnswers({...answers, [currentQuestion.id]: option});
+                    handleNext();
+                  }}
+                  className="w-full text-left p-4 rounded-lg border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {currentQuestion.type === 'slider' && (
+            <div>
+              <input
+                type="range"
+                min={currentQuestion.min}
+                max={currentQuestion.max}
+                value={answers[currentQuestion.id] || 5}
+                onChange={(e) => setAnswers({...answers, [currentQuestion.id]: e.target.value})}
+                className="w-full h-3 bg-orange-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="text-center mt-4">
+                <span className="text-4xl font-bold text-orange-600">{answers[currentQuestion.id] || 5}</span>
               </div>
-              <div>
-                <label className="block text-sm font-bold mb-2 text-orange-900">Email *</label>
-                <input type="email" required value={contactInfo.email} onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
-                  className="w-full border-2 border-orange-200 rounded-xl p-4 focus:border-orange-500 focus:outline-none" placeholder="your.email@example.com" />
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-2 text-orange-900">Phone/WhatsApp *</label>
-                <input type="tel" required pattern="[0-9]{10}" value={contactInfo.phone} onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
-                  className="w-full border-2 border-orange-200 rounded-xl p-4 focus:border-orange-500 focus:outline-none" placeholder="10-digit mobile number" />
-              </div>
-              <p className="text-sm text-orange-700 flex items-center gap-2 font-medium"><CheckCircle size={16} className="text-orange-500" /> Your information is divinely protected</p>
-              <button onClick={handleContactSubmit} disabled={loading}
-                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-4 rounded-full font-bold hover:from-orange-700 hover:to-amber-700 transition disabled:opacity-50 shadow-lg">
-                {loading ? 'Channeling Divine Analysis...' : 'Get My Sacred Roadmap'}
+              <button
+                onClick={handleNext}
+                className="w-full mt-6 bg-orange-600 text-white py-3 rounded-full font-bold hover:bg-orange-700 transition-all"
+              >
+                Continue →
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {step === 'results' && aiResults && (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl shadow-2xl p-8 md:p-12 text-white text-center">
-              <Zap size={56} className="mx-auto mb-4 animate-pulse" />
-              <h2 className="text-4xl font-bold mb-4">Your Divine Healing Roadmap</h2>
-              <p className="text-orange-100 text-lg font-medium">Blessed by Maa Durga's sacred energy</p>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-orange-200">
-              <h3 className="text-2xl font-bold mb-4 text-orange-900 flex items-center gap-2">
-                <Brain className="text-orange-600" /> Divine Pattern Analysis
-              </h3>
-              <p className="text-gray-700 leading-relaxed font-medium">{aiResults.patternAnalysis}</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-orange-50 to-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-orange-400">
-              <div className="inline-block bg-gradient-to-r from-orange-600 to-amber-600 text-white text-sm px-4 py-2 rounded-full mb-4 font-bold shadow-md">Sacred Recommendation</div>
-              <h3 className="text-2xl font-bold mb-2 text-orange-900">{aiResults.recommendedService}</h3>
-              <p className="text-4xl font-bold text-orange-600 mb-4">{aiResults.servicePrice}</p>
-              <p className="text-gray-700 leading-relaxed mb-6 font-medium">{aiResults.reasoning}</p>
-              <button onClick={() => onComplete(aiResults)}
-                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-4 rounded-full font-bold hover:from-orange-700 hover:to-amber-700 transition flex items-center justify-center gap-2 shadow-lg">
-                Book Your Divine Session Now <ArrowRight size={22} />
+          {currentQuestion.type === 'textarea' && (
+            <div>
+              <textarea
+                value={answers[currentQuestion.id] || ''}
+                onChange={(e) => setAnswers({...answers, [currentQuestion.id]: e.target.value})}
+                className="w-full border-2 border-orange-200 rounded-lg p-4 h-32 focus:border-orange-500 focus:outline-none"
+                placeholder="Share your thoughts..."
+              />
+              <button
+                onClick={handleNext}
+                disabled={!answers[currentQuestion.id]}
+                className="w-full mt-4 bg-orange-600 text-white py-3 rounded-full font-bold hover:bg-orange-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Continue →
               </button>
             </div>
+          )}
 
-            <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-orange-200">
-              <h3 className="text-2xl font-bold mb-6 text-orange-900">Start Your Sacred Journey Today</h3>
-              <div className="space-y-6">
-                {aiResults.actionSteps.map((step, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-orange-600 to-amber-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">{index + 1}</div>
-                    <div>
-                      <h4 className="font-bold text-lg mb-2 text-orange-900">{step.title}</h4>
-                      <p className="text-gray-700 leading-relaxed font-medium">{step.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {step > 0 && (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="mt-4 text-orange-600 hover:text-orange-700 font-semibold"
+            >
+              ← Previous Question
+            </button>
+          )}
+        </div>
 
-            <div className="bg-gradient-to-r from-orange-100 to-amber-100 rounded-2xl p-6 text-center border-2 border-orange-300">
-              <p className="text-orange-900 mb-2 font-bold">📧 <strong>Check your email for divine guidance!</strong></p>
-              <p className="text-orange-800 font-medium">We've sent your complete healing roadmap to <strong>{contactInfo.email}</strong></p>
-            </div>
-          </div>
-        )}
+        <button
+          onClick={resetToHome}
+          className="mt-6 text-gray-600 hover:text-gray-800 mx-auto block"
+        >
+          ← Back to Home
+        </button>
       </div>
     </div>
   );
 }
 
-function BookingFlow({ initialService, onBack }) {
-  return <div className="text-center py-20 text-gray-600">Booking flow coming soon...</div>;
+// Booking Flow Component
+function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome }) {
+  const [processing, setProcessing] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const services = [
+    { name: "Single Session", price: 2999, duration: "60 min" },
+    { name: "Transformation Package (6 sessions)", price: 14999, duration: "3 weeks" },
+    { name: "Divine Journey (12 sessions)", price: 28999, duration: "3 months" },
+    { name: "Energy Healing Session", price: 3999, duration: "90 min" }
+  ];
+
+  const handlePayment = () => {
+    setProcessing(true);
+    setTimeout(() => {
+      setConfirmed(true);
+      setProcessing(false);
+    }, 2000);
+  };
+
+  if (confirmed) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center py-12">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <CheckCircle className="w-20 h-20 text-green-600 mx-auto mb-6" />
+            <h2 className="text-3xl font-bold text-orange-900 mb-4">
+              Booking Confirmed! 🙏
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your divine transformation journey begins! Blessed with Maa Durga's grace.
+            </p>
+            
+            <div className="bg-orange-50 rounded-xl p-6 mb-6">
+              <div className="text-sm text-gray-600 mb-2">Booking Reference</div>
+              <div className="text-2xl font-bold text-orange-900 mb-4">
+                SSW-{Math.random().toString(36).substr(2, 9).toUpperCase()}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-left">
+                <div>
+                  <div className="text-sm text-gray-600">Service</div>
+                  <div className="font-semibold text-orange-900">{data.service}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Date & Time</div>
+                  <div className="font-semibold text-orange-900">{data.date} at {data.time}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-6">
+              <p className="text-green-800">
+                ✓ Confirmation email sent to <strong>{data.email}</strong>
+              </p>
+            </div>
+
+            <button
+              onClick={resetToHome}
+              className="w-full bg-orange-600 text-white py-4 rounded-full font-bold hover:bg-orange-700 transition-all"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (processing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Sun className="w-16 h-16 text-orange-600 animate-spin mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-orange-900 mb-2">Processing Your Booking... 🙏</h2>
+          <p className="text-gray-600">Securing your divine appointment</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white py-12">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <div className="mb-8">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm font-semibold text-orange-900">Step {step + 1} of 5</span>
+            <span className="text-sm text-gray-600">{Math.round(((step + 1) / 5) * 100)}% Complete</span>
+          </div>
+          <div className="w-full bg-orange-200 rounded-full h-3">
+            <div
+              className="bg-gradient-to-r from-orange-600 to-amber-500 h-3 rounded-full transition-all"
+              style={{ width: `${((step + 1) / 5) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
+          {step === 0 && (
+            <div>
+              <h2 className="text-2xl font-bold text-orange-900 mb-6">Select Your Service</h2>
+              <div className="space-y-4">
+                {services.map((service, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setData({...data, service: service.name, price: service.price});
+                      setStep(1);
+                    }}
+                    className="w-full text-left p-4 rounded-lg border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-bold text-orange-900">{service.name}</div>
+                        <div className="text-sm text-gray-600">{service.duration}</div>
+                      </div>
+                      <div className="text-xl font-bold text-orange-600">₹{service.price.toLocaleString()}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 1 && (
+            <div>
+              <h2 className="text-2xl font-bold text-orange-900 mb-6">Choose Date & Time</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Preferred Date</label>
+                  <input
+                    type="date"
+                    value={data.date || ''}
+                    onChange={(e) => setData({...data, date: e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Preferred Time</label>
+                  <select
+                    value={data.time || ''}
+                    onChange={(e) => setData({...data, time: e.target.value})}
+                    className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                  >
+                    <option value="">Select time...</option>
+                    <option value="09:00 AM">09:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="02:00 PM">02:00 PM</option>
+                    <option value="04:00 PM">04:00 PM</option>
+                    <option value="06:00 PM">06:00 PM</option>
+                  </select>
+                </div>
+
+                <button
+                  onClick={() => setStep(2)}
+                  disabled={!data.date || !data.time}
+                  className="w-full bg-orange-600 text-white py-3 rounded-full font-bold hover:bg-orange-700 transition-all disabled:bg-gray-300"
+                >
+                  Continue →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div>
+              <h2 className="text-2xl font-bold text-orange-900 mb-6">Session Format</h2>
+              <div className="space-y-3">
+                {['Online (Zoom/Google Meet)', 'Phone Call'].map((format, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setData({...data, format: format});
+                      setStep(3);
+                    }}
+                    className="w-full text-left p-4 rounded-lg border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                  >
+                    {format}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div>
+              <h2 className="text-2xl font-bold text-orange-900 mb-6">Contact Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
+                  <input
+                    type="text"
+                    value={data.name || ''}
+                    onChange={(e) => setData({...data, name: e.target.value})}
+                    className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                    placeholder="Your name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={data.email || ''}
+                    onChange={(e) => setData({...data, email: e.target.value})}
+                    className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Phone</label>
+                  <input
+                    type="tel"
+                    value={data.phone || ''}
+                    onChange={(e) => setData({...data, phone: e.target.value})}
+                    className="w-full border-2 border-orange-200 rounded-lg p-3 focus:border-orange-500 focus:outline-none"
+                    placeholder="+91 XXXXX XXXXX"
+                  />
+                </div>
+
+                <button
+                  onClick={() => setStep(4)}
+                  disabled={!data.name || !data.email || !data.phone}
+                  className="w-full bg-orange-600 text-white py-3 rounded-full font-bold hover:bg-orange-700 transition-all disabled:bg-gray-300"
+                >
+                  Continue →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div>
+              <h2 className="text-2xl font-bold text-orange-900 mb-6">Confirm & Pay</h2>
+              
+              <div className="bg-orange-50 rounded-xl p-6 mb-6">
+                <h3 className="font-bold text-orange-900 mb-4">Booking Summary</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Service:</span>
+                    <span className="font-semibold text-orange-900">{data.service}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Date & Time:</span>
+                    <span className="font-semibold text-orange-900">{data.date} at {data.time}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Format:</span>
+                    <span className="font-semibold text-orange-900">{data.format}</span>
+                  </div>
+                  <div className="border-t-2 border-orange-200 mt-4 pt-4 flex justify-between text-xl">
+                    <span className="font-bold text-orange-900">Total:</span>
+                    <span className="font-bold text-orange-600">₹{data.price?.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handlePayment}
+                  className="w-full bg-orange-600 text-white py-4 rounded-full font-bold hover:bg-orange-700 transition-all"
+                >
+                  Pay Now with Razorpay - ₹{data.price?.toLocaleString()}
+                </button>
+                
+                <button
+                  onClick={handlePayment}
+                  className="w-full bg-orange-100 text-orange-600 border-2 border-orange-600 py-4 rounded-full font-bold hover:bg-orange-200 transition-all"
+                >
+                  Book Now, Pay After Session
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-600 text-center mt-4">
+                🔒 Secure payment powered by Razorpay
+              </p>
+            </div>
+          )}
+
+          {step > 0 && step < 4 && (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="mt-4 text-orange-600 hover:text-orange-700 font-semibold"
+            >
+              ← Previous Step
+            </button>
+          )}
+        </div>
+
+        <button
+          onClick={resetToHome}
+          className="mt-6 text-gray-600 hover:text-gray-800 mx-auto block"
+        >
+          ← Back to Home
+        </button>
+      </div>
+    </div>
+  );
 }
