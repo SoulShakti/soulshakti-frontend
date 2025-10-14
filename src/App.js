@@ -529,7 +529,7 @@ function BookingFlow({ onBack }) {
 
       console.log('Sending booking request:', bookingData);
 
-      const response = await fetch(`${API_URL}/bookings`, {
+     const response = await fetch(`${API_URL}/booking/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
