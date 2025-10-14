@@ -153,7 +153,7 @@ function LandingPage({ setCurrentView }) {
             {[
               {
                 name: "Single Session",
-                price: "₹2,999",
+                price: "₹1,111",
                 features: [
                   "60-minute one-on-one session",
                   "Personalized healing plan",
@@ -162,37 +162,46 @@ function LandingPage({ setCurrentView }) {
                 ]
               },
               {
-                name: "Transformation Package",
-                price: "₹14,999",
+                name: "6 Sessions Package",
+                price: "₹3,333",
+                originalPrice: "₹6,666",
                 popular: true,
                 features: [
-                  "6 sessions (twice weekly)",
+                  "6 powerful sessions",
                   "Comprehensive assessment",
                   "Daily check-ins via WhatsApp",
                   "Lifetime community access",
-                  "Bonus: Energy healing session"
+                  "Bonus: Energy healing session",
+                  "Save ₹3,333 (50% OFF!)"
                 ]
               },
               {
-                name: "Divine Journey",
-                price: "₹28,999",
+                name: "11 Sessions Package",
+                price: "₹5,555",
+                originalPrice: "₹11,111",
                 features: [
-                  "12 sessions (3 months)",
+                  "11 transformative sessions",
                   "Complete life transformation",
                   "24/7 priority support",
                   "Monthly energy healing",
-                  "Personalized rituals & practices"
+                  "Personalized rituals & practices",
+                  "Save ₹5,556 (50% OFF!)"
                 ]
               }
             ].map((pkg, index) => (
               <div key={index} className={`bg-white p-8 rounded-2xl shadow-xl ${pkg.popular ? 'ring-4 ring-orange-500 transform scale-105' : ''}`}>
                 {pkg.popular && (
                   <div className="bg-orange-500 text-white text-sm font-bold py-1 px-4 rounded-full inline-block mb-4">
-                    MOST POPULAR
+                    MOST POPULAR - 50% OFF!
                   </div>
                 )}
                 <h3 className="text-2xl font-bold mb-2 text-orange-900">{pkg.name}</h3>
-                <div className="text-4xl font-bold mb-6 text-orange-600">{pkg.price}</div>
+                <div className="mb-6">
+                  {pkg.originalPrice && (
+                    <div className="text-lg text-gray-400 line-through">{pkg.originalPrice}</div>
+                  )}
+                  <div className="text-4xl font-bold text-orange-600">{pkg.price}</div>
+                </div>
                 <ul className="space-y-3 mb-8">
                   {pkg.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
@@ -716,10 +725,24 @@ function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome
   const [error, setError] = useState(null);
 
   const services = [
-    { name: "Single Session", price: 2999, duration: "60 min" },
-    { name: "Transformation Package (6 sessions)", price: 14999, duration: "3 weeks" },
-    { name: "Divine Journey (12 sessions)", price: 28999, duration: "3 months" },
-    { name: "Energy Healing Session", price: 3999, duration: "90 min" }
+    { 
+      name: "Single Session", 
+      price: 1111, 
+      originalPrice: null,
+      duration: "60 min" 
+    },
+    { 
+      name: "6 Sessions Package", 
+      price: 3333, 
+      originalPrice: 6666,
+      duration: "6 sessions - Save 50%!" 
+    },
+    { 
+      name: "11 Sessions Package", 
+      price: 5555, 
+      originalPrice: 11111,
+      duration: "11 sessions - Save 50%!" 
+    }
   ];
 
   const loadRazorpay = () => {
@@ -950,14 +973,24 @@ function BookingFlow({ step, setStep, data, setData, setCurrentView, resetToHome
                       setData({...data, service: service.name, price: service.price});
                       setStep(1);
                     }}
-                    className="w-full text-left p-4 rounded-lg border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                    className="w-full text-left p-6 rounded-lg border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all"
                   >
                     <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-bold text-orange-900">{service.name}</div>
+                      <div className="flex-1">
+                        <div className="font-bold text-orange-900 text-lg mb-1">{service.name}</div>
                         <div className="text-sm text-gray-600">{service.duration}</div>
                       </div>
-                      <div className="text-xl font-bold text-orange-600">₹{service.price.toLocaleString()}</div>
+                      <div className="text-right">
+                        {service.originalPrice && (
+                          <div className="text-sm text-gray-400 line-through">₹{service.originalPrice.toLocaleString()}</div>
+                        )}
+                        <div className="text-2xl font-bold text-orange-600">₹{service.price.toLocaleString()}</div>
+                        {service.originalPrice && (
+                          <div className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full mt-1 inline-block">
+                            SAVE ₹{(service.originalPrice - service.price).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </button>
                 ))}
