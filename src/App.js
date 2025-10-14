@@ -995,7 +995,7 @@ function BookingFlow({ onBack }) {
                         Processing...
                       </>
                     ) : (
-                      {paymentMethod === 'payNow' ? '💳 Proceed to Payment' : 'Confirm Booking'}
+                      paymentMethod === 'payNow' ? '💳 Proceed to Payment' : 'Confirm Booking'
                     )}
                   </button>
                 </div>
