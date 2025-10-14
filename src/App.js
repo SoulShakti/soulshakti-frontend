@@ -7,7 +7,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('home');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
       {currentView === 'home' ? (
         <LandingPage onBookNow={() => setCurrentView('booking')} />
       ) : (
@@ -21,22 +21,30 @@ function LandingPage({ onBookNow }) {
   return (
     <>
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="relative overflow-hidden bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 text-white">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%]"
+               style={{
+                 background: 'repeating-conic-gradient(from 0deg, transparent 0deg 2deg, rgba(255,255,255,0.3) 2deg 4deg)',
+               }}>
+          </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Soul Shakti
+              Soul Shakti 🦁
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-purple-100">
+            <p className="text-xl md:text-2xl mb-8 text-orange-100">
               Transform Your Life Through Pranic Healing
             </p>
-            <p className="text-lg mb-12 max-w-2xl mx-auto">
-              Experience the ancient art of energy healing. Clear blockages, restore balance, 
-              and unlock your body's natural ability to heal itself.
+            <p className="text-lg mb-12 max-w-2xl mx-auto text-orange-50">
+              Experience the ancient art of energy healing blessed by Maa Durga's divine power. 
+              Clear blockages, restore balance, and unlock your body's natural ability to heal itself.
             </p>
             <button
               onClick={onBookNow}
-              className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-50 transition-colors inline-flex items-center gap-2"
+              className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center gap-2 shadow-xl"
             >
               Book Your Session <ArrowRight className="w-5 h-5" />
             </button>
@@ -51,28 +59,28 @@ function LandingPage({ onBookNow }) {
         </h2>
         <div className="grid md:grid-cols-3 gap-12">
           <div className="text-center">
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Sun className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Sun className="w-10 h-10 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold mb-4">Energy Cleansing</h3>
+            <h3 className="text-xl font-semibold mb-4 text-orange-900">Energy Cleansing</h3>
             <p className="text-gray-600">
               Remove negative energies and blockages that prevent your natural healing abilities
             </p>
           </div>
           <div className="text-center">
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Heart className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Heart className="w-10 h-10 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold mb-4">Emotional Balance</h3>
+            <h3 className="text-xl font-semibold mb-4 text-orange-900">Emotional Balance</h3>
             <p className="text-gray-600">
               Release emotional trauma and restore inner peace and harmony
             </p>
           </div>
           <div className="text-center">
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Users className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Users className="w-10 h-10 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold mb-4">Holistic Wellness</h3>
+            <h3 className="text-xl font-semibold mb-4 text-orange-900">Holistic Wellness</h3>
             <p className="text-gray-600">
               Address physical, emotional, and spiritual aspects of your wellbeing
             </p>
@@ -81,7 +89,7 @@ function LandingPage({ onBookNow }) {
       </div>
 
       {/* Pricing Section */}
-      <div className="bg-purple-50 py-20">
+      <div className="bg-orange-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
             Choose Your Healing Journey
@@ -90,44 +98,44 @@ function LandingPage({ onBookNow }) {
             Select the package that resonates with your healing needs
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <Star className="w-8 h-8 text-purple-600" />
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+                <Star className="w-8 h-8 text-orange-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-2 text-purple-700">The Divine Session</h3>
+              <h3 className="text-2xl font-bold mb-2 text-orange-700">The Divine Session</h3>
               <p className="text-gray-700 font-medium mb-2">Single Pranic Healing Session</p>
-              <p className="text-3xl font-bold text-purple-600 mb-4">₹1,111</p>
+              <p className="text-3xl font-bold text-orange-600 mb-4">₹1,111</p>
               <p className="text-gray-600">Experience the transformative power of Pranic Healing in a personalized one-on-one session.</p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-purple-500 relative">
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-500 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold">50% OFF</span>
               </div>
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <Heart className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+                <Heart className="w-8 h-8 text-orange-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-2 text-purple-700">The Divine Journey</h3>
+              <h3 className="text-2xl font-bold mb-2 text-orange-700">The Divine Journey</h3>
               <p className="text-gray-700 font-medium mb-2">6 Sessions Package</p>
               <div className="mb-4">
                 <span className="text-lg text-gray-400 line-through mr-2">₹6,666</span>
-                <span className="text-3xl font-bold text-purple-600">₹3,333</span>
+                <span className="text-3xl font-bold text-orange-600">₹3,333</span>
               </div>
               <p className="text-gray-600">Comprehensive healing journey for deep transformation and lasting change.</p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-purple-500 relative">
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-500 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold">50% OFF</span>
               </div>
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <Sun className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+                <Sun className="w-8 h-8 text-orange-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-2 text-purple-700">The Divine Transformation</h3>
+              <h3 className="text-2xl font-bold mb-2 text-orange-700">The Divine Transformation</h3>
               <p className="text-gray-700 font-medium mb-2">11 Sessions Package</p>
               <div className="mb-4">
                 <span className="text-lg text-gray-400 line-through mr-2">₹11,111</span>
-                <span className="text-3xl font-bold text-purple-600">₹5,555</span>
+                <span className="text-3xl font-bold text-orange-600">₹5,555</span>
               </div>
               <p className="text-gray-600">Complete healing transformation program for profound spiritual growth.</p>
             </div>
@@ -135,7 +143,7 @@ function LandingPage({ onBookNow }) {
           <div className="text-center mt-12">
             <button
               onClick={onBookNow}
-              className="bg-purple-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-700 transition-colors inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-orange-700 hover:to-amber-700 transition-colors inline-flex items-center gap-2 shadow-xl"
             >
               Book Your Healing Session <ArrowRight className="w-5 h-5" />
             </button>
@@ -145,27 +153,27 @@ function LandingPage({ onBookNow }) {
 
       {/* Contact Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="bg-white rounded-2xl shadow-xl p-12">
+        <div className="bg-white rounded-2xl shadow-xl p-12 border-2 border-orange-200">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Get In Touch</h2>
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Mail className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <Mail className="w-6 h-6 text-orange-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Email</p>
-                <a href="mailto:contact@soulshakti.in" className="text-purple-600 font-semibold hover:underline">
+                <a href="mailto:contact@soulshakti.in" className="text-orange-600 font-semibold hover:underline">
                   contact@soulshakti.in
                 </a>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Phone className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <Phone className="w-6 h-6 text-orange-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Phone</p>
-                <a href="tel:+919876543210" className="text-purple-600 font-semibold hover:underline">
+                <a href="tel:+919876543210" className="text-orange-600 font-semibold hover:underline">
                   +91 98765 43210
                 </a>
               </div>
@@ -266,7 +274,7 @@ function BookingFlow({ onBack }) {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border-2 border-orange-200">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
@@ -274,8 +282,8 @@ function BookingFlow({ onBack }) {
           <p className="text-gray-600 mb-8">
             Thank you for booking with Soul Shakti. We've sent a confirmation email to {formData.email}.
           </p>
-          <div className="bg-purple-50 rounded-lg p-6 mb-8 text-left">
-            <h3 className="font-semibold mb-3 text-purple-800">Booking Details:</h3>
+          <div className="bg-orange-50 rounded-lg p-6 mb-8 text-left border-2 border-orange-200">
+            <h3 className="font-semibold mb-3 text-orange-800">Booking Details:</h3>
             <div className="space-y-2 text-sm">
               <p><span className="text-gray-600">Service:</span> <span className="font-medium">{selectedService.displayName}</span></p>
               <p><span className="text-gray-600">Date:</span> <span className="font-medium">{selectedDate}</span></p>
@@ -285,7 +293,7 @@ function BookingFlow({ onBack }) {
           </div>
           <button
             onClick={onBack}
-            className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+            className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 transition-colors"
           >
             Return to Home
           </button>
@@ -299,27 +307,27 @@ function BookingFlow({ onBack }) {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={onBack}
-          className="mb-8 text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2"
+          className="mb-8 text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-2"
         >
           ← Back to Home
         </button>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-orange-200">
           {/* Progress Steps */}
-          <div className="bg-purple-50 px-8 py-6">
+          <div className="bg-orange-50 px-8 py-6">
             <div className="flex items-center justify-between max-w-2xl mx-auto">
               {[1, 2, 3, 4].map((s) => (
                 <React.Fragment key={s}>
                   <div className="flex items-center">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                      step >= s ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'
+                      step >= s ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-500'
                     }`}>
                       {s}
                     </div>
                   </div>
                   {s < 4 && (
                     <div className={`flex-1 h-1 mx-4 ${
-                      step > s ? 'bg-purple-600' : 'bg-gray-200'
+                      step > s ? 'bg-orange-600' : 'bg-gray-200'
                     }`} />
                   )}
                 </React.Fragment>
@@ -345,13 +353,13 @@ function BookingFlow({ onBack }) {
                       onClick={() => setSelectedService(service)}
                       className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
                         selectedService?.id === service.id 
-                          ? 'border-purple-500 bg-purple-50' 
-                          : 'border-gray-200 hover:border-purple-300'
+                          ? 'border-orange-500 bg-orange-50' 
+                          : 'border-gray-200 hover:border-orange-300'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-bold text-xl text-purple-700 mb-1">{service.displayName}</h3>
+                          <h3 className="font-bold text-xl text-orange-700 mb-1">{service.displayName}</h3>
                           <p className="text-sm text-gray-700 font-medium">{service.name}</p>
                           <p className="text-sm text-gray-600">{service.duration} minutes</p>
                         </div>
@@ -366,12 +374,12 @@ function BookingFlow({ onBack }) {
                               </span>
                             </div>
                           )}
-                          <p className="text-2xl font-bold text-purple-600">₹{service.price}</p>
+                          <p className="text-2xl font-bold text-orange-600">₹{service.price}</p>
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{service.description}</p>
                       {service.sessions > 1 && (
-                        <p className="text-sm font-semibold text-purple-600">
+                        <p className="text-sm font-semibold text-orange-600">
                           {service.sessions} Sessions • {service.discount}% OFF
                         </p>
                       )}
@@ -381,7 +389,7 @@ function BookingFlow({ onBack }) {
                 <button
                   onClick={() => setStep(2)}
                   disabled={!selectedService}
-                  className="mt-8 w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  className="mt-8 w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                 >
                   Continue
                 </button>
@@ -397,7 +405,7 @@ function BookingFlow({ onBack }) {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
                 />
                 <div className="flex gap-4 mt-8">
                   <button
@@ -409,7 +417,7 @@ function BookingFlow({ onBack }) {
                   <button
                     onClick={() => setStep(3)}
                     disabled={!selectedDate}
-                    className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
                     Continue
                   </button>
@@ -428,8 +436,8 @@ function BookingFlow({ onBack }) {
                       onClick={() => setSelectedTime(time)}
                       className={`p-4 border-2 rounded-lg font-semibold transition-all ${
                         selectedTime === time
-                          ? 'border-purple-500 bg-purple-50 text-purple-700'
-                          : 'border-gray-200 hover:border-purple-300 text-gray-700'
+                          ? 'border-orange-500 bg-orange-50 text-orange-700'
+                          : 'border-gray-200 hover:border-orange-300 text-gray-700'
                       }`}
                     >
                       <Clock className="w-5 h-5 mx-auto mb-2" />
@@ -447,7 +455,7 @@ function BookingFlow({ onBack }) {
                   <button
                     onClick={() => setStep(4)}
                     disabled={!selectedTime}
-                    className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
                     Continue
                   </button>
@@ -466,7 +474,7 @@ function BookingFlow({ onBack }) {
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
                       placeholder="Enter your full name"
                       required
                     />
@@ -477,7 +485,7 @@ function BookingFlow({ onBack }) {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
                       placeholder="your.email@example.com"
                       required
                     />
@@ -488,7 +496,7 @@ function BookingFlow({ onBack }) {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
                       placeholder="+91 98765 43210"
                       required
                     />
@@ -498,7 +506,7 @@ function BookingFlow({ onBack }) {
                     <textarea
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
                       rows="4"
                       placeholder="Any special requests or information we should know?"
                     />
@@ -506,15 +514,15 @@ function BookingFlow({ onBack }) {
                 </div>
 
                 {/* Summary */}
-                <div className="mt-8 p-6 bg-purple-50 rounded-lg">
-                  <h3 className="font-semibold mb-4 text-purple-800">Booking Summary</h3>
+                <div className="mt-8 p-6 bg-orange-50 rounded-lg border-2 border-orange-200">
+                  <h3 className="font-semibold mb-4 text-orange-800">Booking Summary</h3>
                   <div className="space-y-2 text-sm">
                     <p><span className="text-gray-600">Service:</span> <span className="font-medium">{selectedService.displayName}</span></p>
                     <p><span className="text-gray-600">Date:</span> <span className="font-medium">{selectedDate}</span></p>
                     <p><span className="text-gray-600">Time:</span> <span className="font-medium">{selectedTime}</span></p>
                     <p><span className="text-gray-600">Duration:</span> <span className="font-medium">{selectedService.duration} minutes</span></p>
-                    <div className="pt-2 border-t border-purple-200">
-                      <p className="text-lg"><span className="text-gray-600">Total:</span> <span className="font-bold text-purple-600">₹{selectedService.price}</span></p>
+                    <div className="pt-2 border-t border-orange-200">
+                      <p className="text-lg"><span className="text-gray-600">Total:</span> <span className="font-bold text-orange-600">₹{selectedService.price}</span></p>
                     </div>
                   </div>
                 </div>
@@ -530,7 +538,7 @@ function BookingFlow({ onBack }) {
                   <button
                     onClick={handleSubmit}
                     disabled={!formData.name || !formData.email || !formData.phone || loading}
-                    className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? 'Booking...' : 'Confirm Booking'}
                   </button>
