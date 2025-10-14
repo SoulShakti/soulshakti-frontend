@@ -471,6 +471,8 @@ function BookingFlow({ onBack }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  const [paymentMethod, setPaymentMethod] = useState('payLater');
+  const [bookingRef, setBookingRef] = useState('');
   const services = [
     { 
       id: 1, 
@@ -510,6 +512,101 @@ function BookingFlow({ onBack }) {
     '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM'
   ];
 
+  // Payment handling functions
+  const handlePayNowBooking = async (bookingData) => {
+    try {
+      console.log('Creating Razorpay order...');
+      
+      // Create order on backend
+      const orderResponse = await fetch(`${API_URL}/payment/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: bookingData.price,
+          currency: 'INR',
+          bookingData
+        })
+      });
+
+      const orderData = await orderResponse.json();
+      console.log('Order created:', orderData);
+
+      if (!orderData.success) {
+        throw new Error('Failed to create payment order');
+      }
+
+      // Open Razorpay checkout
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: 'Soul Shakti Wellness',
+        description: `${bookingData.displayName}`,
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          await verifyPayment(response, bookingData);
+        },
+        prefill: {
+          name: bookingData.name,
+          email: bookingData.email,
+          contact: bookingData.phone
+        },
+        theme: {
+          color: '#667eea'
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+            setError('Payment cancelled. Please try again if you wish to pay now.');
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError('Payment failed: ' + error.message);
+      setLoading(false);
+    }
+  };
+
+  const verifyPayment = async (paymentResponse, bookingData) => {
+    try {
+      console.log('Verifying payment...');
+      
+      const verifyResponse = await fetch(`${API_URL}/payment/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          razorpay_order_id: paymentResponse.razorpay_order_id,
+          razorpay_payment_id: paymentResponse.razorpay_payment_id,
+          razorpay_signature: paymentResponse.razorpay_signature,
+          bookingData: {
+            ...bookingData,
+            paymentStatus: 'Paid',
+            paymentId: paymentResponse.razorpay_payment_id
+          }
+        })
+      });
+
+      const verifyData = await verifyResponse.json();
+      console.log('Verification result:', verifyData);
+
+      if (verifyData.success) {
+        setBookingRef(paymentResponse.razorpay_payment_id);
+        setSuccess(true);
+        setLoading(false);
+      } else {
+        throw new Error('Payment verification failed');
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      setError('Payment verification failed. Please contact support with payment ID: ' + paymentResponse.razorpay_payment_id);
+      setLoading(false);
+    }
+  };
   const handleSubmit = async () => {
     setLoading(true);
     setError('');
@@ -521,40 +618,52 @@ function BookingFlow({ onBack }) {
         price: selectedService.price,
         date: selectedDate,
         time: selectedTime,
+        duration: selectedService.duration,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         message: formData.message
       };
 
+      console.log('Payment method:', paymentMethod);
       console.log('Sending booking request:', bookingData);
 
-     const response = await fetch(`${API_URL}/booking/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData),
-      });
+      if (paymentMethod === 'payNow') {
+        // Handle Pay Now with Razorpay
+        await handlePayNowBooking(bookingData);
+      } else {
+        // Handle Pay Later (existing flow)
+        const response = await fetch(`${API_URL}/booking/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ bookingData }),
+        });
 
-      console.log('Response status:', response.status);
+        console.log('Response status:', response.status);
 
-      const data = await response.json();
-      console.log('Response data:', data);
+        const data = await response.json();
+        console.log('Response data:', data);
 
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Booking failed. Please try again.');
+        if (!response.ok) {
+          throw new Error(data.error || data.message || 'Booking failed. Please try again.');
+        }
+
+        setBookingRef(data.bookingRef || 'CONFIRMED');
+        setSuccess(true);
       }
-
-      setSuccess(true);
     } catch (err) {
       console.error('Booking error:', err);
       setError(err.message || 'Failed to create booking. Please check your connection and try again.');
     } finally {
-      setLoading(false);
+      if (paymentMethod !== 'payNow') {
+        // Only set loading false here for Pay Later
+        // For Pay Now, it's set in the payment callbacks
+        setLoading(false);
+      }
     }
   };
-
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-12">
@@ -826,6 +935,47 @@ function BookingFlow({ onBack }) {
                   </div>
                 </div>
 
+
+                       {/* Payment Method Selection */}
+              <div className="mt-6 p-6 bg-white rounded-xl border-2 border-gray-200">
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">Choose Payment Method</h3>
+                
+                <div className="flex gap-4">
+                  <label className={`flex-1 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    paymentMethod === 'payLater' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="payLater"
+                      checked={paymentMethod === 'payLater'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-3"
+                    />
+                    <div className="inline-block">
+                      <strong className="text-gray-900">Pay After Session</strong>
+                      <p className="text-sm text-gray-600 mt-1">Complete payment after your healing session</p>
+                    </div>
+                  </label>
+
+                  <label className={`flex-1 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    paymentMethod === 'payNow' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="payNow"
+                      checked={paymentMethod === 'payNow'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-3"
+                    />
+                    <div className="inline-block">
+                      <strong className="text-gray-900">💳 Pay Now</strong>
+                      <p className="text-sm text-gray-600 mt-1">Secure payment via Razorpay</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
                 <div className="flex gap-4 mt-8">
                   <button
                     onClick={() => setStep(3)}
@@ -845,7 +995,7 @@ function BookingFlow({ onBack }) {
                         Processing...
                       </>
                     ) : (
-                      'Confirm Booking'
+                      {paymentMethod === 'payNow' ? '💳 Proceed to Payment' : 'Confirm Booking'}
                     )}
                   </button>
                 </div>
