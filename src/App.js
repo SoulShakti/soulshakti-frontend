@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sun, Heart, Users, Calendar, CheckCircle, ArrowRight, Mail, Phone, Clock, Star } from 'lucide-react';
+import { Sun, Heart, Users, Calendar, CheckCircle, ArrowRight, Mail, Phone, Clock, Star, Brain, Moon, Sparkles, Zap } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -35,79 +35,149 @@ function LandingPage({ onBookNow }) {
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               Soul Shakti 🦁
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-orange-100">
-              Transform Your Life Through Pranic Healing
+            <p className="text-xl md:text-2xl mb-4 text-orange-100">
+              Transform Your Life Through Gratitude
             </p>
-            <p className="text-lg mb-12 max-w-2xl mx-auto text-orange-50">
-              Experience the ancient art of energy healing blessed by Maa Durga's divine power. 
-              Clear blockages, restore balance, and unlock your body's natural ability to heal itself.
+            <p className="text-lg mb-8 text-orange-50 max-w-2xl mx-auto">
+              Founded by Nagesh UG - Certified Life Coach specializing in Gratitude Healing, 
+              Subconscious Reprogramming, and Integrated Divine Practices
+            </p>
+            <p className="text-md mb-12 text-orange-100">
+              1000+ Lives Transformed | 9+ Years of Practice | 100% Dedicated to Your Growth
             </p>
             <button
               onClick={onBookNow}
               className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center gap-2 shadow-xl"
             >
-              Book Your Session <ArrowRight className="w-5 h-5" />
+              Start Your Transformation <ArrowRight className="w-5 h-5" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
+      {/* Services Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <h2 className="text-4xl font-bold text-center mb-16 text-gray-800">
-          Why Choose Pranic Healing?
+        <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
+          Services Designed for Your Transformation
         </h2>
-        <div className="grid md:grid-cols-3 gap-12">
-          <div className="text-center">
-            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Sun className="w-10 h-10 text-orange-600" />
+        <p className="text-center text-gray-600 mb-16 text-lg">
+          Experience profound healing through Nagesh's unique integrated approach
+        </p>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Gratitude Healing */}
+          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+              <span className="text-3xl">🙏</span>
             </div>
-            <h3 className="text-xl font-semibold mb-4 text-orange-900">Energy Cleansing</h3>
-            <p className="text-gray-600">
-              Remove negative energies and blockages that prevent your natural healing abilities
+            <h3 className="text-xl font-bold mb-2 text-orange-900">Gratitude Healing</h3>
+            <p className="text-2xl font-bold text-orange-600 mb-3">₹1,111</p>
+            <p className="text-gray-600 text-sm">
+              Experience the life-changing power of gratitude. Through structured healing sessions, 
+              we'll unlock abundance, joy, and transformation in every area of your life using proven gratitude techniques.
             </p>
           </div>
-          <div className="text-center">
-            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Heart className="w-10 h-10 text-orange-600" />
+
+          {/* Subconscious Digging */}
+          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+              <Brain className="w-8 h-8 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold mb-4 text-orange-900">Emotional Balance</h3>
-            <p className="text-gray-600">
-              Release emotional trauma and restore inner peace and harmony
+            <h3 className="text-xl font-bold mb-2 text-orange-900">Subconscious Digging Sessions</h3>
+            <p className="text-2xl font-bold text-orange-600 mb-3">₹1,111</p>
+            <p className="text-gray-600 text-sm">
+              Dive deep into your subconscious mind to uncover hidden beliefs and patterns that hold you back. 
+              Through gentle digging techniques, we identify and transform these programs at their source.
             </p>
           </div>
-          <div className="text-center">
-            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Users className="w-10 h-10 text-orange-600" />
+
+          {/* Advanced Healing */}
+          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+              <Zap className="w-8 h-8 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold mb-4 text-orange-900">Holistic Wellness</h3>
-            <p className="text-gray-600">
-              Address physical, emotional, and spiritual aspects of your wellbeing
+            <h3 className="text-xl font-bold mb-2 text-orange-900">Advanced Healing Techniques</h3>
+            <p className="text-2xl font-bold text-orange-600 mb-3">₹1,111</p>
+            <p className="text-gray-600 text-sm">
+              Utilizing theta-inspired methods and deep subconscious work, we access altered states of consciousness 
+              to facilitate rapid transformation. Release emotional blockages and heal past trauma.
+            </p>
+          </div>
+
+          {/* Life Coaching */}
+          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-orange-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-orange-900">Life Coaching & Counseling</h3>
+            <p className="text-2xl font-bold text-orange-600 mb-3">₹1,111</p>
+            <p className="text-gray-600 text-sm">
+              Receive certified life coaching support with compassionate counseling to navigate life's challenges, 
+              set empowering goals, and create sustainable positive change in your daily life.
+            </p>
+          </div>
+
+          {/* Dream Interpretation */}
+          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+              <Moon className="w-8 h-8 text-orange-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-orange-900">Dream Interpretation</h3>
+            <p className="text-2xl font-bold text-orange-600 mb-3">₹1,111</p>
+            <p className="text-gray-600 text-sm">
+              Every dream carries a message. Discover the hidden wisdom in your dreams and understand 
+              what your subconscious is trying to tell you. Gain clarity and direction for your path forward.
+            </p>
+          </div>
+
+          {/* Integrated Healing - FEATURED */}
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-400 relative">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <span className="bg-orange-600 text-white px-4 py-1 rounded-full text-xs font-bold">MOST COMPREHENSIVE</span>
+            </div>
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4 mt-2">
+              <Sparkles className="w-8 h-8 text-orange-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-orange-900">Integrated Healing Sessions</h3>
+            <p className="text-2xl font-bold text-orange-600 mb-3">₹1,111</p>
+            <p className="text-gray-600 text-sm">
+              Experience Nagesh's signature healing method combining Gratitude Healing, Theta brainwave techniques, 
+              and deep subconscious digging. This powerful blend allows us to access multiple levels of consciousness, 
+              release emotional blockages, and reprogram limiting beliefs at their source for lasting transformation. 
+              Duration: 60-90 minutes.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Pricing Section */}
+      {/* Pricing Packages Section */}
       <div className="bg-orange-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
             Choose Your Healing Journey
           </h2>
           <p className="text-center text-gray-600 mb-12 text-lg">
-            Select the package that resonates with your healing needs
+            Select the package that resonates with your transformation needs
           </p>
           <div className="grid md:grid-cols-3 gap-8">
+            {/* Single Session */}
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-200">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
                 <Star className="w-8 h-8 text-orange-600" />
               </div>
               <h3 className="text-2xl font-bold mb-2 text-orange-700">The Divine Session</h3>
-              <p className="text-gray-700 font-medium mb-2">Single Pranic Healing Session</p>
+              <p className="text-gray-700 font-medium mb-2">Single Healing Session</p>
               <p className="text-3xl font-bold text-orange-600 mb-4">₹1,111</p>
-              <p className="text-gray-600">Experience the transformative power of Pranic Healing in a personalized one-on-one session.</p>
+              <p className="text-sm text-gray-500 mb-3">60-90 minutes</p>
+              <ul className="text-sm text-gray-600 space-y-2">
+                <li>✓ Gratitude Healing techniques</li>
+                <li>✓ Subconscious Digging</li>
+                <li>✓ Theta brainwave activation</li>
+                <li>✓ Personalized healing plan</li>
+              </ul>
             </div>
 
+            {/* 6 Sessions Package */}
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-500 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold">50% OFF</span>
@@ -121,9 +191,17 @@ function LandingPage({ onBookNow }) {
                 <span className="text-lg text-gray-400 line-through mr-2">₹6,666</span>
                 <span className="text-3xl font-bold text-orange-600">₹3,333</span>
               </div>
-              <p className="text-gray-600">Comprehensive healing journey for deep transformation and lasting change.</p>
+              <p className="text-sm text-gray-500 mb-3">Six 60-90 minute sessions</p>
+              <ul className="text-sm text-gray-600 space-y-2">
+                <li>✓ Complete subconscious reprogramming</li>
+                <li>✓ Sustained transformation</li>
+                <li>✓ Weekly accountability</li>
+                <li>✓ Progress tracking</li>
+                <li>✓ Email support between sessions</li>
+              </ul>
             </div>
 
+            {/* 11 Sessions Package */}
             <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-2 border-orange-500 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold">50% OFF</span>
@@ -137,7 +215,14 @@ function LandingPage({ onBookNow }) {
                 <span className="text-lg text-gray-400 line-through mr-2">₹11,111</span>
                 <span className="text-3xl font-bold text-orange-600">₹5,555</span>
               </div>
-              <p className="text-gray-600">Complete healing transformation program for profound spiritual growth.</p>
+              <p className="text-sm text-gray-500 mb-3">Eleven 60-90 minute sessions</p>
+              <ul className="text-sm text-gray-600 space-y-2">
+                <li>✓ Deep subconscious transformation</li>
+                <li>✓ Complete life pattern shifts</li>
+                <li>✓ Priority scheduling</li>
+                <li>✓ Comprehensive progress tracking</li>
+                <li>✓ Extended email support</li>
+              </ul>
             </div>
           </div>
           <div className="text-center mt-12">
@@ -151,33 +236,219 @@ function LandingPage({ onBookNow }) {
         </div>
       </div>
 
-      {/* Contact Section */}
+      {/* Journey Timeline */}
+      <div className="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 text-white py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl font-bold text-center mb-4">My Journey of Healing</h2>
+          <p className="text-center text-orange-100 mb-12 text-lg">
+            From personal transformation to empowering thousands
+          </p>
+          
+          <div className="space-y-8">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <span className="text-orange-600 font-bold">1</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">2015 - The Beginning</h3>
+                <p className="text-orange-100">
+                  Planted the seed of wellness and entrepreneurship. Discovered the power of Law of Attraction, 
+                  gratitude healing, and spiritual growth through my own transformation journey.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <span className="text-orange-600 font-bold">2</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">Growth & Learning</h3>
+                <p className="text-orange-100">
+                  Upskilled through various healing modalities including gratitude healing, Theta healing techniques, 
+                  and deep subconscious work. What healed me, I began sharing with others.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <span className="text-orange-600 font-bold">3</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">During COVID-19</h3>
+                <p className="text-orange-100">
+                  Guided over 100 people through gratitude healing during the pandemic, helping them find peace, 
+                  purpose, and stability during uncertain times.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <span className="text-orange-600 font-bold">4</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">Professional Certification</h3>
+                <p className="text-orange-100">
+                  Became a certified Life Coach and deepened my practice in Theta Healing to enhance my ability 
+                  to facilitate profound transformation.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <span className="text-orange-600 font-bold">5</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">Today</h3>
+                <p className="text-orange-100">
+                  Thousands of empowered individuals have transformed their lives through our integrated healing approach. 
+                  Now expanding to reach even more souls ready for change.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonials */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="bg-white rounded-2xl shadow-xl p-12 border-2 border-orange-200">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Get In Touch</h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <Mail className="w-6 h-6 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <a href="mailto:contact@soulshakti.in" className="text-orange-600 font-semibold hover:underline">
-                  contact@soulshakti.in
-                </a>
+        <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">
+          Real Transformations, Real People
+        </h2>
+        <div className="text-center mb-12">
+          <p className="text-orange-600 font-semibold text-lg">
+            1000+ Clients Healed | 9+ Years Experience | Certified Life Coach
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-orange-100">
+            <div className="flex gap-1 mb-3">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-orange-400 text-orange-400" />)}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "The gratitude healing sessions with Nagesh completely shifted my perspective. I went from feeling 
+              stuck and resentful to grateful and abundant. Within weeks, opportunities started flowing into my life."
+            </p>
+            <p className="text-sm text-gray-600 font-semibold">— Anjali K., Bangalore</p>
+            <p className="text-xs text-gray-500">Financial Struggles</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-orange-100">
+            <div className="flex gap-1 mb-3">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-orange-400 text-orange-400" />)}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "I had recurring nightmares for years. Nagesh's dream interpretation revealed patterns I never connected. 
+              The healing work that followed released trauma I didn't know I was carrying."
+            </p>
+            <p className="text-sm text-gray-600 font-semibold">— Vikram P., Delhi</p>
+            <p className="text-xs text-gray-500">Recurring Nightmares</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-orange-100">
+            <div className="flex gap-1 mb-3">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-orange-400 text-orange-400" />)}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "As someone who tried therapy for years, I was amazed at how quickly Nagesh's subconscious digging 
+              got to the root. The combination of gratitude and theta techniques created shifts I'd been seeking for a decade."
+            </p>
+            <p className="text-sm text-gray-600 font-semibold">— Meera J., Pune</p>
+            <p className="text-xs text-gray-500">Anxiety & Past Trauma</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-orange-100">
+            <div className="flex gap-1 mb-3">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-orange-400 text-orange-400" />)}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "Nagesh doesn't just heal you, he empowers you with tools to continue your own healing. 
+              The gratitude practices he taught me have become a daily ritual that keeps me grounded and positive."
+            </p>
+            <p className="text-sm text-gray-600 font-semibold">— Arjun M., Hyderabad</p>
+            <p className="text-xs text-gray-500">Lack of Direction</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-orange-100">
+            <div className="flex gap-1 mb-3">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-orange-400 text-orange-400" />)}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "I was skeptical about 'energy healing' but Nagesh's practical, down-to-earth approach made sense. 
+              The results speak for themselves—my relationship with my family has completely transformed."
+            </p>
+            <p className="text-sm text-gray-600 font-semibold">— Divya R., Chennai</p>
+            <p className="text-xs text-gray-500">Relationship Issues</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-xl shadow-lg border-2 border-orange-300">
+            <p className="text-gray-700 font-semibold mb-2 italic">
+              "Working with Nagesh changed my life. The combination of gratitude healing and subconscious work 
+              helped me break free from patterns I'd carried for years. I'm finally living the life I always dreamed of."
+            </p>
+            <p className="text-sm text-orange-600 font-bold">— Healing Journey Participant</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Final CTA */}
+      <div className="bg-gray-100 py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-3xl shadow-2xl p-12 text-center text-white">
+            <h2 className="text-4xl font-bold mb-4">Ready to Begin Your Transformation?</h2>
+            <p className="text-xl mb-8 text-orange-100">
+              Join thousands who have already experienced profound healing and lasting change
+            </p>
+            <button
+              onClick={onBookNow}
+              className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center gap-2 shadow-xl"
+            >
+              Start Your Journey Now <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact & Footer */}
+      <div className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="text-xl font-bold mb-4 text-orange-400">Soul Shakti</h3>
+              <p className="text-gray-400">
+                Founded by Nagesh UG<br />
+                Certified Life Coach & Healing Practitioner
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Contact</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-orange-400" />
+                  <a href="mailto:therapovo@gmail.com" className="hover:text-orange-400">
+                    therapovo@gmail.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-5 h-5 text-orange-400" />
+                  <span>Bengaluru, Karnataka, India</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <Phone className="w-6 h-6 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Phone</p>
-                <a href="tel:+919876543210" className="text-orange-600 font-semibold hover:underline">
-                  +91 98765 43210
-                </a>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <div className="space-y-2">
+                <a href="#" className="block hover:text-orange-400">Privacy Policy</a>
+                <a href="#" className="block hover:text-orange-400">Terms & Conditions</a>
               </div>
             </div>
+          </div>
+          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+            <p>© 2025 Soul Shakti Wellness. All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -208,7 +479,7 @@ function BookingFlow({ onBack }) {
       duration: 60, 
       price: 1111,
       sessions: 1,
-      description: 'Experience the transformative power of Pranic Healing'
+      description: 'Single Healing Session - Gratitude Healing, Subconscious Digging, Theta activation'
     },
     { 
       id: 2, 
@@ -219,7 +490,7 @@ function BookingFlow({ onBack }) {
       originalPrice: 6666,
       discount: 50,
       sessions: 6,
-      description: 'Comprehensive healing journey for deep transformation'
+      description: 'Six healing sessions with complete subconscious reprogramming and ongoing support'
     },
     { 
       id: 3, 
@@ -230,7 +501,7 @@ function BookingFlow({ onBack }) {
       originalPrice: 11111,
       discount: 50,
       sessions: 11,
-      description: 'Complete healing transformation program'
+      description: 'Eleven sessions for deep transformation and complete life pattern shifts'
     }
   ];
 
@@ -244,28 +515,41 @@ function BookingFlow({ onBack }) {
     setError('');
 
     try {
+      const bookingData = {
+        service: selectedService.name,
+        displayName: selectedService.displayName,
+        price: selectedService.price,
+        date: selectedDate,
+        time: selectedTime,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message
+      };
+
+      console.log('Sending booking request:', bookingData);
+
       const response = await fetch(`${API_URL}/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          service: selectedService.name,
-          date: selectedDate,
-          time: selectedTime,
-          ...formData
-        }),
+        body: JSON.stringify(bookingData),
       });
 
+      console.log('Response status:', response.status);
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Booking failed');
+        throw new Error(data.error || data.message || 'Booking failed. Please try again.');
       }
 
       setSuccess(true);
     } catch (err) {
-      setError(err.message || 'Failed to create booking. Please try again.');
+      console.error('Booking error:', err);
+      setError(err.message || 'Failed to create booking. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -273,7 +557,7 @@ function BookingFlow({ onBack }) {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4 py-12">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border-2 border-orange-200">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-600" />
@@ -289,6 +573,7 @@ function BookingFlow({ onBack }) {
               <p><span className="text-gray-600">Date:</span> <span className="font-medium">{selectedDate}</span></p>
               <p><span className="text-gray-600">Time:</span> <span className="font-medium">{selectedTime}</span></p>
               <p><span className="text-gray-600">Duration:</span> <span className="font-medium">{selectedService.duration} minutes</span></p>
+              <p><span className="text-gray-600">Total:</span> <span className="font-bold text-orange-600">₹{selectedService.price}</span></p>
             </div>
           </div>
           <button
@@ -337,8 +622,12 @@ function BookingFlow({ onBack }) {
 
           <div className="p-8">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                {error}
+              <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                <p className="text-red-700 font-semibold mb-2">⚠️ Booking Error</p>
+                <p className="text-red-600 text-sm">{error}</p>
+                <p className="text-red-600 text-sm mt-2">
+                  If this persists, please contact us directly at therapovo@gmail.com
+                </p>
               </div>
             )}
 
@@ -405,7 +694,7 @@ function BookingFlow({ onBack }) {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none text-lg"
                 />
                 <div className="flex gap-4 mt-8">
                   <button
@@ -491,7 +780,7 @@ function BookingFlow({ onBack }) {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone/WhatsApp *</label>
                     <input
                       type="tel"
                       value={formData.phone}
@@ -502,14 +791,18 @@ function BookingFlow({ onBack }) {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      What's the main challenge you'd like to address? (Optional)
+                    </label>
                     <textarea
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                       className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
                       rows="4"
-                      placeholder="Any special requests or information we should know?"
+                      maxLength="500"
+                      placeholder="Share what brings you to Soul Shakti..."
                     />
+                    <p className="text-xs text-gray-500 mt-1">{formData.message.length}/500 characters</p>
                   </div>
                 </div>
 
@@ -521,8 +814,14 @@ function BookingFlow({ onBack }) {
                     <p><span className="text-gray-600">Date:</span> <span className="font-medium">{selectedDate}</span></p>
                     <p><span className="text-gray-600">Time:</span> <span className="font-medium">{selectedTime}</span></p>
                     <p><span className="text-gray-600">Duration:</span> <span className="font-medium">{selectedService.duration} minutes</span></p>
+                    {selectedService.originalPrice && (
+                      <p><span className="text-gray-600">Original Price:</span> <span className="line-through text-gray-400">₹{selectedService.originalPrice}</span></p>
+                    )}
                     <div className="pt-2 border-t border-orange-200">
-                      <p className="text-lg"><span className="text-gray-600">Total:</span> <span className="font-bold text-orange-600">₹{selectedService.price}</span></p>
+                      <p className="text-lg"><span className="text-gray-600">Total to Pay:</span> <span className="font-bold text-orange-600">₹{selectedService.price}</span></p>
+                      {selectedService.originalPrice && (
+                        <p className="text-sm text-green-600 font-semibold">You save ₹{selectedService.originalPrice - selectedService.price}!</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -538,9 +837,16 @@ function BookingFlow({ onBack }) {
                   <button
                     onClick={handleSubmit}
                     disabled={!formData.name || !formData.email || !formData.phone || loading}
-                    className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 text-white py-3 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                   >
-                    {loading ? 'Booking...' : 'Confirm Booking'}
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      'Confirm Booking'
+                    )}
                   </button>
                 </div>
               </div>
