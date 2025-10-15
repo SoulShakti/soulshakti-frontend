@@ -48,7 +48,7 @@ function LandingPage({ onBookNow }) {
             <p className="text-md mb-12 text-orange-100">
               1000+ Lives Transformed | 9+ Years of Practice | 100% Dedicated to Your Growth
             </p>
-  <button
+
             
             <button
               onClick={onBookNow}
