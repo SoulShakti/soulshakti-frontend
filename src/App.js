@@ -6,7 +6,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home');
-  const [isQuizOpen, setIsQuizOpen] = useState(false);
+ 
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
@@ -20,6 +20,7 @@ export default function App() {
 }
 
 function LandingPage({ onBookNow }) {
+   const [isQuizOpen, setIsQuizOpen] = useState(false);
   return (
     <>
       {/* Hero Section */}
