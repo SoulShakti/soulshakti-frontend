@@ -299,7 +299,7 @@ const AbundanceQuiz = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {(step === 7 && formData.recurringDreams === 'No') || step === 8 ? (
+          {((step === 7 && formData.recurringDreams === 'No') || (step === 8 && formData.recurringDreams === 'Yes')) && (
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-6">How urgent is this matter for you?</h3>
               <div className="space-y-3">
@@ -318,7 +318,7 @@ const AbundanceQuiz = ({ isOpen, onClose }) => {
                 ))}
               </div>
             </div>
-          ) : null}
+          )
 
           {step === 9 && (
             <div>
