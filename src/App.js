@@ -525,7 +525,7 @@ function BookingFlow({ onBack }) {
       console.log('Creating Razorpay order...');
       
       // Create order on backend
-      const orderResponse = await fetch(`${API_URL}/payment/create-order`, {
+      const orderResponse = await fetch(`${API_URL}/api/payment/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -583,7 +583,7 @@ function BookingFlow({ onBack }) {
     try {
       console.log('Verifying payment...');
       
-      const verifyResponse = await fetch(`${API_URL}/payment/verify`, {
+      const verifyResponse = await fetch(`${API_URL}/api/payment/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -640,7 +640,7 @@ function BookingFlow({ onBack }) {
         await handlePayNowBooking(bookingData);
       } else {
         // Handle Pay Later (existing flow)
-        const response = await fetch(`${API_URL}/booking/create`, {
+        const response = await fetch(`${API_URL}/api/booking/create`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
