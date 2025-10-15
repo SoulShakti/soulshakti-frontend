@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Sun, Heart, Users, Calendar, CheckCircle, ArrowRight, Mail, Phone, Clock, Star, Brain, Moon, Sparkles, Zap } from 'lucide-react';
+import AbundanceQuiz from './components/AbundanceQuiz';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home');
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
@@ -45,6 +47,12 @@ function LandingPage({ onBookNow }) {
             <p className="text-md mb-12 text-orange-100">
               1000+ Lives Transformed | 9+ Years of Practice | 100% Dedicated to Your Growth
             </p>
+  <button
+              onClick={() => setIsQuizOpen(true)}
+              className="bg-white text-orange-600 px-10 py-5 rounded-full text-xl font-bold hover:bg-orange-50 transition-all transform hover:scale-105 shadow-xl mb-4"
+            >
+              🌟 Take the FREE 2-Minute Abundance Quiz
+            </button>
             <button
               onClick={onBookNow}
               className="bg-white text-orange-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-orange-50 transition-colors inline-flex items-center gap-2 shadow-xl"
@@ -452,6 +460,12 @@ function LandingPage({ onBookNow }) {
           </div>
         </div>
       </div>
+
+        {/* Abundance Quiz Modal */}
+      <AbundanceQuiz 
+        isOpen={isQuizOpen} 
+        onClose={() => setIsQuizOpen(false)} 
+      />
     </>
   );
 }
