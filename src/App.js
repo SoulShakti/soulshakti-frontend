@@ -53,7 +53,7 @@ function LandingPage({ onBookNow }) {
 
     <button
             onClick={() => setIsQuizOpen(true)}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-full text-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-xl mb-4"
+            className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-10 py-5 rounded-full text-xl font-bold hover:from-orange-600 hover:to-amber-600 transition-all transform hover:scale-105 shadow-xl mb-4"
           >
             🌟 Take the FREE Abundance Quiz
           </button>
